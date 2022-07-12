@@ -1,0 +1,63 @@
+@using DocumentFormat.OpenXml.Packaging
+@using System.Text.RegularExpressions
+@inject AppState State
+@inject PowerPointTemplateService TemplateService
+<h2>Badge Template</h2>
+
+<div class="card mb-3">
+  <div class="card-body">
+    Download this <a>PowerPoint file</a> and design a full single page of badges with the template text for first and
+    last name.
+  </div>
+</div>
+
+<div class="mb-3">
+  <label for="formFile" class="form-label">PowerPoint Template File</label>
+  <InputFile OnChange="OnFileSelected" class="form-control" accept=".pptx" />
+</div>
+
+
+@if (IsValidatingFile)
+{
+  <p>Validating...</p>
+}
+else
+{
+  <ul>
+    @foreach (var error in ValidationErrors)
+    {
+      <li>@error</li>
+    }
+  </ul>
+}
+
+@code {
+  bool IsValidatingFile = false;
+  List<string> ValidationErrors = new List<string>();
+
+  static Regex FirstNameRegex = new Regex(@"{{\s?first\s?:\s?[1-8]\s?}}", RegexOptions.Compiled);
+  static Regex LastNameRegex = new Regex(@"{{\s?last\s?:\s?[1-8]\s?}}", RegexOptions.Compiled);
+
+  async Task OnFileSelected(InputFileChangeEventArgs e)
+  {
+    IsValidatingFile = true;
+    ValidationErrors.Clear();
+
+    try
+    {
+      using var stream = e.File.OpenReadStream(4 * 1024 * 1024);
+      using var memoryStream = new MemoryStream();
+      await stream.CopyToAsync(memoryStream);
+      State.PowerPointFile = memoryStream.ToArray();
+
+      ValidationErrors.AddRange(TemplateService.ValidateTemplate(State.PowerPointFile));
+    }
+    catch (Exception ex)
+    {
+      ValidationErrors.Add($"This file seems corupt and cannot be read. Error: {ex}");
+    }
+
+    IsValidatingFile = false;
+  }
+
+}
