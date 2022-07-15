@@ -3,7 +3,7 @@
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 
-namespace NameBadgeAutomator
+namespace NameBadgeAutomater
 {
   public class PowerPointTemplateService
   {

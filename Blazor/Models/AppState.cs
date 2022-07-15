@@ -2,7 +2,7 @@
 using DocumentFormat.OpenXml.Packaging;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace NameBadgeAutomator
+namespace NameBadgeAutomater
 {
   public class AppState
   {

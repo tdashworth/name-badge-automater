@@ -1,4 +1,4 @@
-namespace NameBadgeAutomator
+namespace NameBadgeAutomater
 {
   public class Person
   {

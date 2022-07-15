@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "NameBadgeAutomator": {
+    "NameBadgeAutomater": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
