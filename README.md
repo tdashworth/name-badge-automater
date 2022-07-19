@@ -36,6 +36,8 @@ A wizard style application that:
   https://dribbble.com/shots/3051474-Wizard-Ui-Design/attachments/641041
   https://github.com/dotnet/aspnetcore/issues/17730
   https://dev.to/madhust/how-to-publish-blazor-webassembly-application-to-github-pages-using-github-action-54h4
+  https://codepen.io/mithicher/pen/wvabGoN
+  https://tailwindcomponents.com/component/wizard-steps-bar-with-tailwind-css
 
   TODO
   - Exception handling 
