@@ -1,6 +1,6 @@
 <div class="border-b border-gray-200 dark:border-gray-700 mb-4">
   <ul class="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
-    <li class="mr-2" onclick="() => @OnClick.InvokeAsync(WizardStages.UploadTemplate)">
+    <li class="mr-2" @onclick="() => OnTabClicked.InvokeAsync(WizardStages.UploadTemplate)">
       <div class="inline-flex p-4 rounded-t-lg border-b-2 group @TabClasses(WizardStages.UploadTemplate)">
         <svg class="mr-2 w-5 h-5 @SvgClasses(WizardStages.UploadTemplate)" fill="none" stroke="currentColor"
           viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -10,7 +10,7 @@
         Upload Template
       </div>
     </li>
-    <li class="mr-2" onclick="() => @OnClick.InvokeAsync(WizardStages.EnterNames)">
+    <li class="mr-2" @onclick="() => OnTabClicked.InvokeAsync(WizardStages.EnterNames)">
       <div class="inline-flex p-4 rounded-t-lg border-b-2 group @TabClasses(WizardStages.EnterNames)">
         <svg class="mr-2 w-5 h-5 @SvgClasses(WizardStages.EnterNames)" fill="currentColor" viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg">
@@ -19,7 +19,7 @@
         </svg>Enter Names
       </div>
     </li>
-    <li class="mr-2" onclick="() => @OnClick.InvokeAsync(WizardStages.FormatNames)">
+    <li class="mr-2" @onclick="() => OnTabClicked.InvokeAsync(WizardStages.FormatNames)">
       <div class="inline-flex p-4 rounded-t-lg border-b-2 group @TabClasses(WizardStages.FormatNames)">
         <svg class="mr-2 w-5 h-5 @SvgClasses(WizardStages.FormatNames)" fill="currentColor" viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg">
@@ -29,7 +29,7 @@
         </svg>Format Names
       </div>
     </li>
-    <li class="mr-2" onclick="() => @OnClick.InvokeAsync(WizardStages.ReviewAndGenerate)">
+    <li class="mr-2" @onclick="() => OnTabClicked.InvokeAsync(WizardStages.ReviewAndGenerate)">
       <div class="inline-flex p-4 rounded-t-lg border-b-2 group @TabClasses(WizardStages.ReviewAndGenerate)">
         <svg class="mr-2 w-5 h-5 @SvgClasses(WizardStages.ReviewAndGenerate)" fill="currentColor" viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg">
@@ -50,7 +50,7 @@
   public WizardStages stage { get; set; }
 
   [Parameter]
-  public EventCallback<WizardStages> OnClick { get; set; }
+  public EventCallback<WizardStages> OnTabClicked {get; set;}
 
   string TabClasses(WizardStages stage) => stage == this.stage
   ? "text-blue-600 border-blue-600 active dark:text-blue-500 dark:border-blue-500"
