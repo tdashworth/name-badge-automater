@@ -1,6 +1,6 @@
 name: Deploy Blazor WASM to GitHub Page
 env:
-  PUBLISH_DIR: Blazor/bin/Release/net5.0/publish/wwwroot
+  PUBLISH_DIR: Blazor/bin/Release/net6.0/publish/wwwroot
 
 # Controls when the action will run
 on:
