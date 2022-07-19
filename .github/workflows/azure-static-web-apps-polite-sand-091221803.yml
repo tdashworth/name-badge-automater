@@ -18,6 +18,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Install Tailwind CLI
+        run: npm install -g tailwindcss
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
