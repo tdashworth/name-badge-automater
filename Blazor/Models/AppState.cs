@@ -6,7 +6,7 @@ namespace NameBadgeAutomater
 {
   public class AppState
   {
-    public byte[] PowerPointFile { get; set; }
+    public byte[]? PowerPointFile { get; set; }
     public List<Person> People { get; set; } = new List<Person>();
   }
 }

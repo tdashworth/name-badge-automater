@@ -1,54 +1,12 @@
 ﻿@page "/"
-@inject AppState State
+@inject NavigationManager NavManager
 
 <PageTitle>Name Badge Automater</PageTitle>
 
-<h1>Name Badge Automater</h1>
-
-@if (Stage == WizardStages.PowerPointTemplate)
-{
-  <PowerPointTemplateStep />
-
-  <button @onclick="WizardContinue">Continue</button>
-}
-
-@if (Stage == WizardStages.ParticipantNames)
-{
-  <ParticipantNamesStep />
-
-  <button @onclick="WizardContinue">Continue</button>
-  <button @onclick="WizardBack">Back</button>
-}
-
-@if (Stage == WizardStages.ReviewAndGenerate)
-{
-  <ReviewAndGenerateStep />
-  
-  <button @onclick="WizardBack">Back</button>
-}
-
 @code {
-  WizardStages Stage = WizardStages.PowerPointTemplate;
-
-  void WizardContinue()
+  protected override void OnInitialized()
   {
-    this.Stage = this.Stage switch
-    {
-      WizardStages.PowerPointTemplate => WizardStages.ParticipantNames,
-      WizardStages.ParticipantNames => WizardStages.ReviewAndGenerate,
-      WizardStages.ReviewAndGenerate => WizardStages.ReviewAndGenerate,
-      _ => throw new Exception("Stage unknown.")
-    };
+    NavManager.NavigateTo("/upload-template");
   }
 
-  void WizardBack()
-  {
-    this.Stage = this.Stage switch
-    {
-      WizardStages.PowerPointTemplate => WizardStages.PowerPointTemplate,
-      WizardStages.ParticipantNames => WizardStages.PowerPointTemplate,
-      WizardStages.ReviewAndGenerate => WizardStages.ParticipantNames,
-      _ => throw new Exception("Stage unknown.")
-    };
-  }
 }
