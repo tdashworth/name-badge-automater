@@ -1,12 +1,53 @@
 ﻿@page "/"
-@inject NavigationManager NavManager
 
 <PageTitle>Name Badge Automater</PageTitle>
 
+<h1 class="mb-4 text-4xl tracking-tight font-bold text-gray-900 dark:text-white">Name Badge Automater</h1>
+
+<WizardSteps stage="@stage" OnClick="TabClicked"/>
+
+@if (stage == WizardStages.UploadTemplate)
+{
+  <UploadPowerPointTemplate OnNext="Next" />
+}
+else if (stage == WizardStages.EnterNames)
+{
+  <EnterParticipantNames OnNext="@Next" OnBack="@Back" />
+}
+else if (stage == WizardStages.FormatNames)
+{
+  <FormatParticipantNames OnNext="@Next" OnBack="@Back" />
+}
+else if (stage == WizardStages.ReviewAndGenerate)
+{
+  <ReviewAndGenerateStep OnBack="@Back" />
+}
+
 @code {
-  protected override void OnInitialized()
-  {
-    NavManager.NavigateTo("/upload-template");
+  WizardStages stage = WizardStages.UploadTemplate;
+
+  void Next() {
+    stage = stage switch {
+      WizardStages.UploadTemplate => WizardStages.EnterNames,
+      WizardStages.EnterNames => WizardStages.FormatNames,
+      WizardStages.FormatNames => WizardStages.ReviewAndGenerate,
+      WizardStages.ReviewAndGenerate => WizardStages.ReviewAndGenerate,
+      _ => throw new Exception("There must be a stage."),
+    };
+  }
+
+  void Back() {
+    stage = stage switch {
+      WizardStages.UploadTemplate => WizardStages.UploadTemplate,
+      WizardStages.EnterNames => WizardStages.UploadTemplate,
+      WizardStages.FormatNames => WizardStages.EnterNames,
+      WizardStages.ReviewAndGenerate => WizardStages.FormatNames,
+      _ => throw new Exception("There must be a stage."),
+    };
+  }
+
+  void TabClicked(WizardStages stage) {
+    this.stage = stage;
   }
 
 }

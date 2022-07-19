@@ -2,8 +2,9 @@ namespace NameBadgeAutomater
 {
   public enum WizardStages
   {
-    PowerPointTemplate,
-    ParticipantNames,
+    UploadTemplate,
+    EnterNames,
+    FormatNames,
     ReviewAndGenerate
   }
 }

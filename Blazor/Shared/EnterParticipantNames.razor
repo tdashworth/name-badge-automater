@@ -1,10 +1,7 @@
-@page "/enter-names"
 @using System.Text
 @inject AppState State
-@inject NavigationManager NavManager
 
-<h2 class="mb-4 text-4xl tracking-tight font-bold text-gray-900 dark:text-white">Paticipant Names</h2>
-
+<h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Paticipant Names</h2>
 
 <p class="mb-4 font-light text-gray-500 dark:text-gray-400">
   Enter a list of names to generator badges with. Each perosn should be on a new line and can be either their of the
@@ -35,6 +32,12 @@
   string RawNames { get; set; } = string.Empty;
   bool AreNamesEntered => !string.IsNullOrWhiteSpace(RawNames);
 
+  [Parameter]
+  public EventCallback OnNext { get; set; }
+  
+  [Parameter]  
+  public EventCallback OnBack { get; set; } 
+
   protected override Task OnInitializedAsync()
   {
     if (State.People.Any())
@@ -48,7 +51,7 @@
     return base.OnInitializedAsync();
   }
 
-  void ProcessRawNames()
+  Task ProcessRawNames()
   {
     if (!string.IsNullOrWhiteSpace(RawNames))
     {
@@ -60,12 +63,10 @@
       .ToList();
     }
 
-    NavManager.NavigateTo("/format-names");
+    return OnNext.InvokeAsync();
   }
 
-  void Back() {
-    NavManager.NavigateTo("/upload-template");
-  }
+  Task Back() => OnBack.InvokeAsync();
 
   Person? ParseRawName(string rawName)
   {
