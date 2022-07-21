@@ -87,6 +87,7 @@ else
 
     await JS.InvokeVoidAsync("downloadFileFromStream", "Generated Name Badges.pptx", streamRef);
 
+    State.HasGeneratedBadges = true;
     IsLoading = false;
   }
 

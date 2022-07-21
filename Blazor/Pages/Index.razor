@@ -1,4 +1,7 @@
 ﻿@page "/"
+@using blazejewicz.Blazor.BeforeUnload
+@inject AppState State
+@inject BeforeUnload BeforeUnload
 
 <PageTitle>Name Badge Automater</PageTitle>
 
@@ -75,6 +78,11 @@
   WizardStages stage = WizardStages.UploadTemplate;
   bool IsSupportToastVisible = true;
 
+  protected override void OnInitialized()
+  {
+    BeforeUnload.BeforeUnloadHandler += BeforeUnloadHandler;
+  }
+
   void Next()
   {
     stage = stage switch
@@ -102,6 +110,18 @@
   void TabClicked(WizardStages stage)
   {
     this.stage = stage;
+  }
+
+  public void Dispose()
+  {
+    BeforeUnload.BeforeUnloadHandler -= BeforeUnloadHandler;
+  }
+
+  void BeforeUnloadHandler(object? sender, BeforeUnloadArgs args)
+  {
+    var isMidProcess = (State.PowerPointFile is not null || State.People.Any()) && !State.HasGeneratedBadges;
+
+    args.CancelRequested = isMidProcess;
   }
 
 }

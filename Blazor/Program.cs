@@ -9,4 +9,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddSingleton(new AppState());
 builder.Services.AddSingleton(new PowerPointTemplateService());
 
+builder.Services.AddBeforeUnload();
+
 await builder.Build().RunAsync();
