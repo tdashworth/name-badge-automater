@@ -80,56 +80,60 @@ namespace NameBadgeAutomater
       return validationErrors;
     }
 
-    public byte[] GenerateFromTemplate(byte[] fileBytes, List<Person> people, bool emptyExtras = true)
+    public byte[] GenerateFromTemplate(byte[] fileBytes, List<Person> people, bool blankUnusedBadges = true)
     {
+      // Open document
       var presentationDocument = PresentationDocument.Open(new MemoryStream(fileBytes), true);
       var presentationPart = presentationDocument.PresentationPart!;
 
+      // Get template slide (there should only be one slide)
       var templatePart = presentationPart.GetSlidePartsInOrder().Last();
 
-      foreach (var peopleGroup in people.Chunk(BADGES_PER_PAGE))
-      {
-        var newSlidePart = templatePart.CloneSlide();
-        if (newSlidePart.Slide != null)
-        {
+      // Generate new slides 
+      people
+        .Chunk(BADGES_PER_PAGE)
+        .Select(peopleGroup => GenerateNewSlideWithNames(templatePart, peopleGroup, blankUnusedBadges))
+        .ToList()
+        .ForEach(newSlide => presentationPart.AppendSlide(newSlide));
 
-          for (var i = 0; i < peopleGroup.Count(); i++)
-          {
-            var person = peopleGroup[i];
-            var firstNameRegex = FIRSTNAME_REGEXS[i];
-            var lastNameRegex = LASTNAME_REGEXS[i];
-
-            newSlidePart.Slide.InnerXml = firstNameRegex.Replace(newSlidePart.Slide.InnerXml, person.FirstName);
-            newSlidePart.Slide.InnerXml = lastNameRegex.Replace(newSlidePart.Slide.InnerXml, person.LastName);
-          }
-
-          if (emptyExtras)
-          {
-            for (var i = peopleGroup.Count(); i < BADGES_PER_PAGE; i++)
-            {
-              var firstNameRegex = FIRSTNAME_REGEXS[i];
-              var lastNameRegex = LASTNAME_REGEXS[i];
-
-              newSlidePart.Slide.InnerXml = firstNameRegex.Replace(newSlidePart.Slide.InnerXml, "");
-              newSlidePart.Slide.InnerXml = lastNameRegex.Replace(newSlidePart.Slide.InnerXml, "");
-            }
-          }
-        }
-        presentationPart.AppendSlide(newSlidePart);
-      }
-
+      // Remove template slide
       presentationPart.RemoveSlide(0);
 
-      presentationPart.Presentation.Save();
-      if (OpenXmlPackage.CanSave)
-      {
-        presentationDocument.Save();
-      }
-
+      // Save document
       using var outStream = new MemoryStream();
       presentationDocument.Clone(outStream).Close();
+      presentationDocument.Close();
 
       return outStream.ToArray();
+    }
+
+    private static SlidePart GenerateNewSlideWithNames(SlidePart templatePart, Person[] peopleGroup, bool blankUnusedBadges)
+    {
+      var newSlidePart = templatePart.CloneSlide();
+
+      for (var i = 0; i < peopleGroup.Count(); i++)
+      {
+        var person = peopleGroup[i];
+        var firstNameRegex = FIRSTNAME_REGEXS[i];
+        var lastNameRegex = LASTNAME_REGEXS[i];
+
+        newSlidePart.Slide.InnerXml = firstNameRegex.Replace(newSlidePart.Slide.InnerXml, person.FirstName);
+        newSlidePart.Slide.InnerXml = lastNameRegex.Replace(newSlidePart.Slide.InnerXml, person.LastName);
+      }
+
+      if (blankUnusedBadges)
+      {
+        for (var i = peopleGroup.Count(); i < BADGES_PER_PAGE; i++)
+        {
+          var firstNameRegex = FIRSTNAME_REGEXS[i];
+          var lastNameRegex = LASTNAME_REGEXS[i];
+
+          newSlidePart.Slide.InnerXml = firstNameRegex.Replace(newSlidePart.Slide.InnerXml, "");
+          newSlidePart.Slide.InnerXml = lastNameRegex.Replace(newSlidePart.Slide.InnerXml, "");
+        }
+      }
+
+      return newSlidePart;
     }
   }
 }
