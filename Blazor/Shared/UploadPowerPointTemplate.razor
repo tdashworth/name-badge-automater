@@ -82,7 +82,7 @@ else
   bool CanContinue => State.PowerPointFile is not null;
   List<string> ValidationErrors = new List<string>();
 
-  string FileName { get; set; }
+  string FileName { get; set; } = string.Empty;
 
   [Parameter]
   public EventCallback OnNext { get; set; }

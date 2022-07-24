@@ -1626,11 +1626,6 @@ video {
     --tw-ring-color: rgb(55 65 81 / var(--tw-ring-opacity));
   }
 
-  .disabled\:dark\:bg-blue-500:disabled {
-    --tw-bg-opacity: 1;
-    background-color: rgb(59 130 246 / var(--tw-bg-opacity));
-  }
-
   .disabled\:dark\:bg-blue-300:disabled {
     --tw-bg-opacity: 1;
     background-color: rgb(147 197 253 / var(--tw-bg-opacity));

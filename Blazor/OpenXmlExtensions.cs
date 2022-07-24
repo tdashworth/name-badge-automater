@@ -1,20 +1,26 @@
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
 
-public static class OpenXmlUtils
+public static class OpenXmlExtensions
 {
-  public static IEnumerable<SlidePart> GetSlidePartsInOrder(this PresentationPart presentationPart)
+  public static IEnumerable<SlidePart> GetSlidePartsInOrder(this PresentationPart? presentationPart)
   {
-    SlideIdList slideIdList = presentationPart.Presentation.SlideIdList;
+    if (presentationPart is null) throw new Exception("Invalid document provided: no presentation part.");
+
+    var slideIdList = presentationPart.Presentation?.SlideIdList;
+    if (slideIdList is null) throw new Exception("Invalid document provided: No slide ids list.");
 
     return slideIdList.ChildElements
         .Cast<SlideId>()
-        .Select(x => presentationPart.GetPartById(x.RelationshipId))
+        .Select(x => presentationPart.GetPartById(x.RelationshipId!))
         .Cast<SlidePart>();
   }
 
   public static SlidePart CloneSlide(this SlidePart templatePart)
   {
+    if (templatePart is null) throw new Exception("Invalid document: no slide part.");
+    if (templatePart.SlideLayoutPart is null) throw new Exception("Invalid document: no slide layout part.");
+
     // find the presentationPart: makes the API more fluent
     var presentationPart = templatePart.GetParentParts()
         .OfType<PresentationPart>()
@@ -38,12 +44,16 @@ public static class OpenXmlUtils
 
   public static void AppendSlide(this PresentationPart presentationPart, SlidePart newSlidePart)
   {
-    SlideIdList slideIdList = presentationPart.Presentation.SlideIdList;
+    if (presentationPart is null) throw new Exception("Invalid document: no presentation part.");
+    if (newSlidePart is null) throw new Exception("Invalid document: no slide part to append.");
+
+    var slideIdList = presentationPart.Presentation?.SlideIdList;
+    if (slideIdList is null) throw new Exception("Invalid document provided: No slide ids list.");
 
     // find the highest id
     uint maxSlideId = slideIdList.ChildElements
         .Cast<SlideId>()
-        .Max(x => x.Id.Value);
+        .Max(x => x.Id!.Value);
 
     // Insert the new slide into the slide list after the previous slide.
     var id = maxSlideId + 1;
@@ -56,9 +66,13 @@ public static class OpenXmlUtils
 
   public static void RemoveSlide(this PresentationPart presentationPart, int index)
   {
-    SlideIdList slideIdList = presentationPart.Presentation.SlideIdList;
+    if (presentationPart is null) throw new Exception("Invalid document: no presentation part.");
+
+    var slideIdList = presentationPart.Presentation.SlideIdList;
+    if (slideIdList is null) throw new Exception("Invalid document provided: No slide ids list.");
 
     var slideId = slideIdList.ChildElements[index] as SlideId;
+    if (slideId is null) throw new Exception($"Invalid document: no slide with index {index}.");
     slideIdList.RemoveChild(slideId);
 
     if (presentationPart.Presentation.CustomShowList != null)
@@ -89,7 +103,7 @@ public static class OpenXmlUtils
     }
 
     // Remove the slide part.
-    SlidePart slidePart = presentationPart.GetPartById(slideId.RelationshipId) as SlidePart;
-    presentationPart.DeletePart(slidePart);
+    var slidePart = presentationPart.GetPartById(slideId.RelationshipId!) as SlidePart;
+    presentationPart.DeletePart(slidePart!);
   }
 }
