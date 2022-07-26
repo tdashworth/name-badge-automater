@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using blazejewicz.Blazor.BeforeUnload
 @inject AppState State
+@inject IWorkerFactory workerFactory
 @inject BeforeUnload BeforeUnload
 
 <PageTitle>Name Badge Automater</PageTitle>
@@ -78,9 +79,26 @@
   WizardStages stage = WizardStages.UploadTemplate;
   bool IsSupportToastVisible = true;
 
-  protected override void OnInitialized()
+  protected override async Task OnInitializedAsync()
   {
     BeforeUnload.BeforeUnloadHandler += BeforeUnloadHandler;
+
+    Console.WriteLine(DateTime.Now.Millisecond);
+
+    // Create worker.
+    State.Worker = await workerFactory.CreateAsync();
+
+    // Create service reference. For most scenarios, it's safe (and best) to keep this
+    // reference around somewhere to avoid the startup cost.
+    State.Service = await State.Worker.CreateBackgroundServiceAsync<PowerPointTemplateService>(options => options
+    .AddConventionalAssemblyOfService()
+    .AddAssemblies("DocumentFormat.OpenXml.dll")
+    .AddAssemblies("System.IO.Packaging.dll")
+    .AddAssemblies("System.Xml.Linq.dll")
+    .AddAssemblies("System.Xml.XDocument.dll")
+    .AddAssemblies("System.IO.Compression.dll")
+    );
+      Console.WriteLine(DateTime.Now.Millisecond);
   }
 
   void Next()

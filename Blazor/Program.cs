@@ -1,3 +1,4 @@
+using BlazorWorker.Core;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using NameBadgeAutomater;
@@ -10,5 +11,6 @@ builder.Services.AddSingleton(new AppState());
 builder.Services.AddSingleton(new PowerPointTemplateService());
 
 builder.Services.AddBeforeUnload();
+builder.Services.AddWorkerFactory();
 
 await builder.Build().RunAsync();

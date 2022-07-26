@@ -1,5 +1,3 @@
-
-
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 
@@ -80,7 +78,7 @@ namespace NameBadgeAutomater
       return validationErrors;
     }
 
-    public byte[] GenerateFromTemplate(byte[] fileBytes, List<Person> people, bool blankUnusedBadges = true)
+    public byte[] GenerateFromTemplate(byte[] fileBytes, string[] people, bool blankUnusedBadges = true)
     {
       // Open document
       var presentationDocument = PresentationDocument.Open(new MemoryStream(fileBytes), true);
@@ -91,6 +89,9 @@ namespace NameBadgeAutomater
 
       // Generate new slides 
       people
+        .Select(Person.FromString)
+        .Where(x => x is not null)
+        .Cast<Person>()
         .Chunk(BADGES_PER_PAGE)
         .Select(peopleGroup => GenerateNewSlideWithNames(templatePart, peopleGroup, blankUnusedBadges))
         .ToList()
@@ -102,7 +103,6 @@ namespace NameBadgeAutomater
       // Save document
       using var outStream = new MemoryStream();
       presentationDocument.Clone(outStream).Close();
-      presentationDocument.Close();
 
       return outStream.ToArray();
     }

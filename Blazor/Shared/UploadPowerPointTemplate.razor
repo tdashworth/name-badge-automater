@@ -5,7 +5,8 @@
 
 <p class="mb-4 font-light text-gray-500 dark:text-gray-400">
   Download this <NavLink class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-    href="downloads/Name Badges Template.pptx" target="_blank">PowerPoint file</NavLink> and design a single full page of
+    href="downloads/Name Badges Template.pptx" target="_blank">PowerPoint file</NavLink> and design a single full page
+  of
   badges. Ensure you keep the template text
   <code>first_x</code> and <code>last_x</code> the same as these will be replaced. You are free to adjust
   their font, size, color, etc.
@@ -101,7 +102,12 @@ else
       await stream.CopyToAsync(memoryStream);
       State.PowerPointFile = memoryStream.ToArray();
 
-      ValidationErrors.AddRange(TemplateService.ValidateTemplate(State.PowerPointFile));
+      // Reference that live outside of the current scope should not be passed into the expression.
+      // To circumvent this, create a scope-local variable like this, and pass the local variable.
+      var bytes = State.PowerPointFile;
+      var result = await State.Service.RunAsync(s => s.ValidateTemplate(bytes));
+
+      ValidationErrors.AddRange(result);
     }
     catch (Exception ex)
     {
