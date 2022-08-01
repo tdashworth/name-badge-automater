@@ -37,7 +37,9 @@ async function onFetch(event) {
     let cachedResponse = null;
     if (event.request.method === 'GET') {
         // For all navigation requests, try to serve index.html from cache
-        const shouldServeIndexHtml = event.request.mode === 'navigate';
+        const shouldServeIndexHtml = event.request.mode === 'navigate'
+            && !event.request.url.includes('/downloads/');
+
         const request = shouldServeIndexHtml ? 'index.html' : event.request;
         const cache = await caches.open(cacheName);
         cachedResponse = await cache.match(request);
