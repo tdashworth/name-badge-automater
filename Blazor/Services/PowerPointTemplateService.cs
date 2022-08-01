@@ -102,7 +102,6 @@ namespace NameBadgeAutomater
       // Save document
       using var outStream = new MemoryStream();
       presentationDocument.Clone(outStream).Close();
-      presentationDocument.Close();
 
       return outStream.ToArray();
     }
