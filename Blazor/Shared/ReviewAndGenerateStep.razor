@@ -77,7 +77,7 @@ else
   @onclick="Back">Back</button>
 
 @code {
-  int pageCount => (int)Math.Round(State.People.Count() / 8.0, MidpointRounding.ToPositiveInfinity);
+  int pageCount => (int)Math.Round(State.People.Count() / (double)State.BadgesPerPage, MidpointRounding.ToPositiveInfinity);
   bool BlankUnusedBadges { get; set; } = true;
   bool IsLoading = false;
   bool CanContinue => State.PowerPointFile is not null && State.People.Any();
@@ -92,7 +92,7 @@ else
 
     if (State.PowerPointFile is null || State.PowerPointFile.Length == 0) throw new Exception("No PowerPoint template provided.");
 
-    var newFileBytes = TemplateService.GenerateFromTemplate(State.PowerPointFile, State.People, BlankUnusedBadges);
+    var newFileBytes = TemplateService.GenerateFromTemplate(State.PowerPointFile, State.People, State.BadgesPerPage, BlankUnusedBadges);
 
     using var streamRef = new DotNetStreamReference(stream: new MemoryStream(newFileBytes));
 

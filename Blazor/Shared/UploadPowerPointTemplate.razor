@@ -43,7 +43,10 @@
 {
   <div
   class="block p-4 mb-4 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-    <p class="font-normal text-gray-700 dark:text-gray-400">File selected: <span class="font-medium">@FileName</span></p>
+    <p class="font-normal text-gray-700 dark:text-gray-400">
+      File selected: <span class="font-medium">@FileName</span>.
+      <span class="font-medium">@State.BadgesPerPage</span> name template(s) were discovered.
+    </p>
   </div>
 }
 
@@ -56,9 +59,10 @@
 
 @if (!IsValidatingFile)
 {
-  <button type="button"
-  class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 disabled:bg-blue-400 disabled:dark:bg-blue-300 disabled:cursor-not-allowed"
-  @onclick="Continue" disabled="@(!CanContinue)">Continue</button>
+  <button type="button" @onclick="Continue" disabled="@(!CanContinue)"
+  class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 disabled:bg-blue-400 disabled:dark:bg-blue-300 disabled:cursor-not-allowed">
+    Continue
+  </button>
 }
 else
 {
@@ -79,7 +83,7 @@ else
 
 @code {
   bool IsValidatingFile = false;
-  bool CanContinue => State.PowerPointFile is not null;
+  bool CanContinue => State.PowerPointFile is not null && !ValidationErrors.Any();
   List<string> ValidationErrors = new List<string>();
 
   string FileName { get; set; } = string.Empty;
@@ -101,7 +105,9 @@ else
       await stream.CopyToAsync(memoryStream);
       State.PowerPointFile = memoryStream.ToArray();
 
-      ValidationErrors.AddRange(TemplateService.ValidateTemplate(State.PowerPointFile));
+      var (badgesPerPage, errors) = TemplateService.ValidateTemplate(State.PowerPointFile);
+      ValidationErrors.AddRange(errors);
+      State.BadgesPerPage = badgesPerPage;
     }
     catch (Exception ex)
     {
