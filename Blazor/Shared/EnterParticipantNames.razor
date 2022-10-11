@@ -1,4 +1,5 @@
 @using System.Text
+@using System.Text.RegularExpressions
 @inject AppState State
 
 <h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Paticipant Names</h2>
@@ -11,6 +12,8 @@
   <li>FirstName LastName</li>
   <li>LastName, FirstName</li>
   <li>FirstName.LastName@email.com</li>
+  <li>FirstName LastName  &lt;some.email@email.com&gt;</li>
+  <li>LastName, FirstName &lt;some.email@email.com&gt;</li>
 </ul>
 
 <textarea
@@ -31,6 +34,8 @@
 @code {
   string RawNames { get; set; } = string.Empty;
   bool AreNamesEntered => !string.IsNullOrWhiteSpace(RawNames);
+
+  Regex EmailListRegex = new Regex("<.*@.*>");
 
   [Parameter]
   public EventCallback OnNext { get; set; }
@@ -57,6 +62,7 @@
     {
       State.People = RawNames
       .Split(Environment.NewLine)
+      .SelectMany(line => line.Split(";"))
       .Select(ParseRawName)
       .Where(person => person is not null)
       .Cast<Person>()
@@ -72,19 +78,26 @@
   {
     if (string.IsNullOrWhiteSpace(rawName)) return null; // No name.
 
-    if (rawName.Contains("@"))
+    rawName = rawName.Trim();
+
+    if (EmailListRegex.IsMatch(rawName)) // * <FirstName.LastName@email.com>
+    { 
+      rawName = EmailListRegex.Replace(rawName, string.Empty);
+    }
+
+    if (rawName.Contains("@")) // FirstName.LastName@email.com
     {
       var nameParts = rawName.Split("@").First().Split(".");
       return new Person { FirstName = nameParts[0].Trim().ToSentenceCase(), LastName = nameParts[1].Trim().ToSentenceCase() };
     }
 
-    if (rawName.Contains(","))
+    if (rawName.Contains(",")) // LastName, FirstName
     {
       var nameParts = rawName.Split(",");
       return new Person { FirstName = nameParts[1].Trim().ToSentenceCase(), LastName = nameParts[0].Trim().ToSentenceCase() };
     }
 
-    if (rawName.Contains(" "))
+    if (rawName.Contains(" ")) // FirstName LastName
     {
       var nameParts = rawName.Split(" ");
       return new Person { FirstName = nameParts[0].Trim().ToSentenceCase(), LastName = nameParts[1].Trim().ToSentenceCase() };
