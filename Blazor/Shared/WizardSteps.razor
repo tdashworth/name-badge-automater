@@ -50,7 +50,7 @@
   public WizardStages stage { get; set; }
 
   [Parameter]
-  public EventCallback<WizardStages> OnTabClicked {get; set;}
+  public EventCallback<WizardStages> OnTabClicked { get; set; }
 
   string TabClasses(WizardStages stage) => stage == this.stage
   ? "text-blue-600 border-blue-600 active dark:text-blue-500 dark:border-blue-500"

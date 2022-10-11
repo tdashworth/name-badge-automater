@@ -3,17 +3,18 @@
 <h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Paticipant Names</h2>
 
 <p class="mb-4 font-light text-gray-500 dark:text-gray-400">
-  We did our best to format the given names into their first and last names. Feel free to review and adjust these or add/remove names. At least one name is required to continue.
+  We did our best to format the given names into their first and last names. Feel free to review and adjust these or
+  add/remove names. At least one name is required to continue.
 </p>
 
 <div class="overflow-x-auto relative mb-4 sm:rounded-lg">
   <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
       <tr>
-        <th scope="col" class="py-3 px-6">
+        <th scope="col" class="py-3 px-6 underline cursor-pointer" @onclick="SortByFirstName">
           First name
         </th>
-        <th scope="col" class="py-3 px-6">
+        <th scope="col" class="py-3 px-6 underline cursor-pointer" @onclick="SortByLastName">
           Last name
         </th>
         <th scope="col" class="py-3 px-6">
@@ -26,35 +27,37 @@
       {
         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
           <th scope="row" class="py-2 px-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-              <input type="text"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              name="FirstName" @bind-value="@person.FirstName" required>
+            <input type="text"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            name="FirstName" @bind-value="@person.FirstName" required>
           </th>
           <td class="py-4 px-6">
             <input type="text"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              name="LastName" @bind-value="@person.LastName"required>
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            name="LastName" @bind-value="@person.LastName" required>
           </td>
           <td class="py-4 px-6">
-            <span class="font-medium text-blue-600 dark:text-blue-500 hover:underline" @onclick="() => RemovePerson(person)">Remove</span>
+            <span class="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
+            @onclick="() => RemovePerson(person)">Remove</span>
           </td>
         </tr>
       }
       <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-          <th scope="row" class="py-2 px-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-              <input type="text"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              name="FirstName" @bind-value="@NewPerson.FirstName" required>
-          </th>
-          <td class="py-4 px-6">
-            <input type="text"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              name="LastName" @bind-value="@NewPerson.LastName"required>
-          </td>
-          <td class="py-4 px-6">
-            <span class="font-medium text-blue-600 dark:text-blue-500 hover:underline" @onclick="AddPerson">Add</span>
-          </td>
-        </tr>
+        <th scope="row" class="py-2 px-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+          <input type="text"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            name="FirstName" @bind-value="@NewPerson.FirstName" required>
+        </th>
+        <td class="py-4 px-6">
+          <input type="text"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            name="LastName" @bind-value="@NewPerson.LastName" required>
+        </td>
+        <td class="py-4 px-6">
+          <span class="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
+            @onclick="AddPerson">Add</span>
+        </td>
+      </tr>
     </tbody>
   </table>
 </div>
@@ -62,11 +65,15 @@
 
 <button type="button"
   class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 disabled:bg-blue-400 disabled:dark:bg-blue-300 disabled:cursor-not-allowed"
-  @onclick="Continue" disabled="@(!CanContinue)">Continue</button>
+  @onclick="Continue" disabled="@(!CanContinue)">
+  Continue
+</button>
 
 <button type="button"
   class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-  @onclick="Back">Back</button>
+  @onclick="Back">
+  Back
+</button>
 
 @code {
   Person NewPerson = new Person();
@@ -74,9 +81,9 @@
 
   [Parameter]
   public EventCallback OnNext { get; set; }
-  
-  [Parameter]  
-  public EventCallback OnBack { get; set; } 
+
+  [Parameter]
+  public EventCallback OnBack { get; set; }
 
   Task Continue() => OnNext.InvokeAsync();
 
@@ -91,5 +98,15 @@
   void RemovePerson(Person person)
   {
     State.People.Remove(person);
+  }
+
+  void SortByFirstName()
+  {
+    State.People.Sort((p1, p2) => string.Compare(p1.FirstName, p2.FirstName));
+  }
+
+  void SortByLastName()
+  {
+    State.People.Sort((p1, p2) => string.Compare(p1.LastName, p2.LastName));
   }
 }
