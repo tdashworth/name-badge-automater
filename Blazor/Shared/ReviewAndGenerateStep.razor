@@ -5,7 +5,7 @@
 <h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Review and Create</h2>
 
 <ul class="space-y-4 mb-4">
-  <li class="flex items-center font-light text-gray-500 dark:text-gray-400">
+  <li class="flex items-center text-gray-600 dark:text-gray-400">
     @if(State.PowerPointFile is null) 
     {
       <svg class="w-6 h-6 flex-none fill-transparent stroke-red-600 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -20,7 +20,7 @@
       PowerPoint template uploaded
     </p>
   </li>
-  <li class="flex items-center font-light text-gray-500 dark:text-gray-400">
+  <li class="flex items-center text-gray-600 dark:text-gray-400">
     @if(!State.People.Any()) 
     {
       <svg class="w-6 h-6 stroke-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -37,7 +37,7 @@
   </li>
 </ul>
 
-<p class="mb-4 font-light text-gray-500 dark:text-gray-400">
+<p class="mb-4 text-gray-600 dark:text-gray-400">
   You have provided @State.People.Count() names to generate badges for. That will be @pageCount pages.
 </p>
 
