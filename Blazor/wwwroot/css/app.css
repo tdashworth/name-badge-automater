@@ -640,8 +640,8 @@ video {
   margin-bottom: 0.75rem;
 }
 
-.ml-4 {
-  margin-left: 1rem;
+.ml-2 {
+  margin-left: 0.5rem;
 }
 
 .mr-3 {
@@ -939,12 +939,12 @@ video {
   fill: #2563eb;
 }
 
-.stroke-green-600 {
-  stroke: #16a34a;
-}
-
 .stroke-red-600 {
   stroke: #dc2626;
+}
+
+.stroke-green-600 {
+  stroke: #16a34a;
 }
 
 .stroke-2 {

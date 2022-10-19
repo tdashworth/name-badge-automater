@@ -6,22 +6,32 @@
 
 <ul class="space-y-4 mb-4">
   <li class="flex items-center font-light text-gray-500 dark:text-gray-400">
-    <svg class="h-6 w-6 flex-none fill-transparent @CheckboxColour(State.PowerPointFile is not null) stroke-2"
-      stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="11" />
-      <path d="m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9" fill="none" />
-    </svg>
-    <p class="ml-4">
+    @if(State.PowerPointFile is null) 
+    {
+      <svg class="w-6 h-6 flex-none fill-transparent stroke-red-600 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    } else {
+      <svg class="w-6 h-6 flex-none fill-transparent stroke-green-600 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    }
+    <p class="ml-3">
       PowerPoint template uploaded
     </p>
   </li>
   <li class="flex items-center font-light text-gray-500 dark:text-gray-400">
-    <svg class="h-6 w-6 flex-none fill-transparent @CheckboxColour(State.People.Any()) stroke-2" stroke-linecap="round"
-      stroke-linejoin="round">
-      <circle cx="12" cy="12" r="11" />
-      <path d="m8 13 2.165 2.165a1 1 0 0 0 1.521-.126L16 9" fill="none" />
-    </svg>
-    <p class="ml-4">
+    @if(!State.People.Any()) 
+    {
+      <svg class="w-6 h-6 stroke-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    } else {
+      <svg class="w-6 h-6 stroke-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    }
+    <p class="ml-3">
       Participant names provided
     </p>
   </li>
