@@ -45,7 +45,7 @@
             enableCorsCorrelation: true,
             enableRequestHeaderTracking: true,
             enableResponseHeaderTracking: true,
-            disableTelemetry: false,
+            disableTelemetry: window.localStorage.getItem("disableTelemetry") == "true",
         }});
       </script>
 </head>

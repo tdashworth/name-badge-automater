@@ -1,4 +1,5 @@
 using BlazorApplicationInsights;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using NameBadgeAutomater;
@@ -12,5 +13,6 @@ builder.Services.AddSingleton<PowerPointTemplateService>();
 
 builder.Services.AddBeforeUnload();
 builder.Services.AddBlazorApplicationInsights();
+builder.Services.AddBlazoredLocalStorage();
 
 await builder.Build().RunAsync();
