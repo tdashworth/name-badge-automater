@@ -2,6 +2,7 @@
 @using blazejewicz.Blazor.BeforeUnload
 @inject AppState State
 @inject BeforeUnload BeforeUnload
+@inject IApplicationInsights AppInsights
 
 <PageTitle>Name Badge Automater</PageTitle>
 
@@ -93,6 +94,7 @@
       WizardStages.ReviewAndGenerate => WizardStages.ReviewAndGenerate,
       _ => throw new Exception("There must be a stage."),
     };
+    AppInsights.TrackPageView(stage.ToString());
   }
 
   void Back()
@@ -105,11 +107,13 @@
       WizardStages.ReviewAndGenerate => WizardStages.FormatNames,
       _ => throw new Exception("There must be a stage."),
     };
+    AppInsights.TrackPageView(stage.ToString());
   }
 
   void TabClicked(WizardStages stage)
   {
     this.stage = stage;
+    AppInsights.TrackPageView(stage.ToString());
   }
 
   public void Dispose()
@@ -120,6 +124,14 @@
   void BeforeUnloadHandler(object? sender, BeforeUnloadArgs args)
   {
     var isMidProcess = (State.PowerPointFile is not null || State.People.Any()) && !State.HasGeneratedBadges;
+
+    if (isMidProcess) {
+      AppInsights.TrackEvent("LeavingMidProcess", new Dictionary<string, object?> {
+        { "TemplateFile", State.PowerPointFile is not null },
+        { "People", State.People.Any() },
+        { "Page", stage.ToString() }
+      });
+    }
 
     args.CancelRequested = isMidProcess;
   }

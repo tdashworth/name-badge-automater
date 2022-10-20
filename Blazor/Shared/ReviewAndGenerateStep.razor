@@ -1,6 +1,8 @@
+@using System.Diagnostics
 @inject AppState State
 @inject PowerPointTemplateService TemplateService
 @inject IJSRuntime JS
+@inject IApplicationInsights AppInsights
 
 <h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Review and Create</h2>
 
@@ -97,19 +99,49 @@ else
 
   async Task GeneratorAndDownload()
   {
-    IsLoading = true;
-    StateHasChanged();
+    var sw = Stopwatch.StartNew();
 
-    if (State.PowerPointFile is null || State.PowerPointFile.Length == 0) throw new Exception("No PowerPoint template provided.");
+    try {
+      IsLoading = true;
+      StateHasChanged();
 
-    var newFileBytes = TemplateService.GenerateFromTemplate(State.PowerPointFile, State.People, State.BadgesPerPage, BlankUnusedBadges);
+      if (State.PowerPointFile is null || State.PowerPointFile.Length == 0) throw new Exception("No PowerPoint template provided.");
 
-    using var streamRef = new DotNetStreamReference(stream: new MemoryStream(newFileBytes));
+      var newFileBytes = TemplateService.GenerateFromTemplate(State.PowerPointFile, State.People, State.BadgesPerPage, BlankUnusedBadges);
 
-    await JS.InvokeVoidAsync("downloadFileFromStream", "Generated Name Badges.pptx", streamRef);
+      using var streamRef = new DotNetStreamReference(stream: new MemoryStream(newFileBytes));
 
-    State.HasGeneratedBadges = true;
-    IsLoading = false;
+      await JS.InvokeVoidAsync("downloadFileFromStream", "Generated Name Badges.pptx", streamRef);
+
+      State.HasGeneratedBadges = true;
+
+      await AppInsights.TrackEvent("GenerateBadges", new Dictionary<string, object?>{ 
+        { "PeopleCount", State.People.Count }, 
+        { "BadgesPerPage", State.BadgesPerPage },
+        { "PageCount", pageCount },
+        { "BlankUnusedBadges", BlankUnusedBadges },
+        { "Duration", sw.ElapsedMilliseconds },
+      });
+    } 
+    catch (Exception ex)
+    {
+      await AppInsights.TrackException(new Error { 
+        Name = ex.GetType()!.AssemblyQualifiedName!,
+        Message = ex.Message, 
+        Stack = ex.StackTrace,
+      }, properties: new Dictionary<string, object?>{ 
+        { "PeopleCount", State.People.Count }, 
+        { "BadgesPerPage", State.BadgesPerPage },
+        { "PageCount", pageCount },
+        { "BlankUnusedBadges", BlankUnusedBadges },
+        { "Duration", sw.ElapsedMilliseconds },
+      });
+      throw;
+    }
+    finally 
+    {
+      IsLoading = false;
+    }
   }
 
   string CheckboxColour(bool condition) => condition ? "stroke-green-600" : "stroke-red-600";
