@@ -1,5 +1,7 @@
+@using System.Diagnostics
 @inject AppState State
 @inject PowerPointTemplateService TemplateService
+@inject IApplicationInsights AppInsights
 
 <h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Badge Template</h2>
 
@@ -93,6 +95,8 @@ else
 
   async Task OnFileSelected(InputFileChangeEventArgs e)
   {
+    var sw = Stopwatch.StartNew();
+
     FileName = e.File.Name;
 
     IsValidatingFile = true;
@@ -108,10 +112,26 @@ else
       var (badgesPerPage, errors) = TemplateService.ValidateTemplate(State.PowerPointFile);
       ValidationErrors.AddRange(errors);
       State.BadgesPerPage = badgesPerPage;
+
+      await AppInsights.TrackEvent("ValidateTemplate", new Dictionary<string, object?>{ 
+        { "FileSize", e.File.Size },
+        { "BadgesPerPage", State.BadgesPerPage },
+        { "ValidationErrorCount", ValidationErrors.Count },
+        { "Duration", sw.ElapsedMilliseconds },
+      });
     }
     catch (Exception ex)
     {
       ValidationErrors.Add($"This file seems corupt and cannot be read. Error: {ex}");
+
+      await AppInsights.TrackException(new Error { 
+        Name = ex.GetType()!.AssemblyQualifiedName!,
+        Message = ex.Message, 
+        Stack = ex.StackTrace,
+      }, properties: new Dictionary<string, object?>{ 
+        { "FileSize", e.File.Size },
+        { "Duration", sw.ElapsedMilliseconds },
+      });
     }
 
     IsValidatingFile = false;
