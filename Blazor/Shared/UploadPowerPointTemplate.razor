@@ -1,7 +1,9 @@
 @using System.Diagnostics
+@using Microsoft.Extensions.Logging
 @inject AppState State
 @inject PowerPointTemplateService TemplateService
 @inject IApplicationInsights AppInsights
+@inject ILogger<UploadPowerPointTemplate> logger
 
 <h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Badge Template</h2>
 
@@ -9,7 +11,7 @@
   Download this <NavLink class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
     href="downloads/Name Badges Template.pptx" target="_blank">PowerPoint file</NavLink> and design a single full page
   of badges. Ensure you keep the template text
-  <code>first_x</code> and <code>last_x</code> the same as these will be replaced. You are free to adjust
+  <code>first_n</code> and <code>last_n</code> the same as these will be replaced. You are free to adjust
   their font, size, color, etc.
 </p>
 
@@ -47,17 +49,62 @@
   class="block p-4 mb-4 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
     <p class="font-normal text-gray-700 dark:text-gray-400">
       File selected: <span class="font-medium">@FileName</span>.
-      <span class="font-medium">@State.BadgesPerPage</span> name template(s) were discovered.
     </p>
   </div>
 }
 
-<ul class="mb-4 ml-5 text-gray-600 dark:text-gray-400 list-disc">
-  @foreach (var error in ValidationErrors)
+@if(DiscoveredTemplates.Any())
+{
+<h3 class="mb-4 text-xl tracking-tight font-bold text-gray-900 dark:text-white">Discovered Templates</h3>
+<ul class="space-y-4 mb-4">
+  @foreach (var discoveredTemplate in DiscoveredTemplates.OrderBy(x => x.Index))
   {
-    <li>@error</li>
+    if(discoveredTemplate.FirstCount > 0 && discoveredTemplate.LastCount > 0)
+    {
+      <li class="flex items-center text-gray-600 dark:text-gray-400">
+    <TickIcon />
+    <p class="ml-3">
+      Found <code>first_@(discoveredTemplate.Index.ToString())</code>
+      <span class="relative -top-2 -left-1 -mr-1 px-1 inline-flex justify-center items-center h-4 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">@(discoveredTemplate.FirstCount) items</span>
+      and <code>last_@(discoveredTemplate.Index.ToString())</code>
+      <span class="relative -top-2 -left-1 -mr-1 px-1 inline-flex justify-center items-center h-4 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">@(discoveredTemplate.LastCount) items</span>.
+    </p>
+  </li>
+    } 
+    else if (discoveredTemplate.FirstCount > 0 && discoveredTemplate.LastCount == 0)
+    {
+      <li class="flex items-center text-gray-600 dark:text-gray-400">
+        <CrossIcon />
+        <p class="ml-3">
+          Found <code>first_@(discoveredTemplate.Index.ToString())</code> 
+          <span class="relative -top-2 -left-1 -mr-1 px-1 inline-flex justify-center items-center h-4 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">@(discoveredTemplate.FirstCount) items</span>
+          but not <code>last_@(discoveredTemplate.Index.ToString())</code>.
+        </p>
+        </li>
+    }
+    else if (discoveredTemplate.FirstCount == 0 && discoveredTemplate.LastCount > 0)
+    {
+      <li class="flex items-center text-gray-600 dark:text-gray-400">
+        <CrossIcon />
+        <p class="ml-3">
+          Not found <code>first_@(discoveredTemplate.Index.ToString())</code> 
+          but found <code>last_@(discoveredTemplate.Index.ToString())</code>
+      <span class="relative -top-2 -left-1 -mr-1 px-1 inline-flex justify-center items-center h-4 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">@(discoveredTemplate.LastCount) items</span>.
+        </p>
+        </li>
+    }
+    else if (discoveredTemplate.FirstCount == 0 && discoveredTemplate.LastCount == 0)
+    {
+      <li class="flex items-center text-gray-600 dark:text-gray-400">
+        <CrossIcon />
+        <p class="ml-3">
+          Not found <code>first_@(discoveredTemplate.Index.ToString())</code> or <code>last_@(discoveredTemplate.Index.ToString())</code>.
+        </p>
+        </li>
+    }
   }
 </ul>
+}
 
 @if (!IsValidatingFile)
 {
@@ -85,8 +132,8 @@ else
 
 @code {
   bool IsValidatingFile = false;
-  bool CanContinue => State.PowerPointFile is not null && !ValidationErrors.Any();
-  List<string> ValidationErrors = new List<string>();
+  bool CanContinue => State.PowerPointFile is not null && TemplateService.IsTemplateValid(DiscoveredTemplates);
+  IEnumerable<NameTemplateResult> DiscoveredTemplates = Enumerable.Empty<NameTemplateResult>();
 
   string FileName { get; set; } = string.Empty;
 
@@ -100,7 +147,6 @@ else
     FileName = e.File.Name;
 
     IsValidatingFile = true;
-    ValidationErrors.Clear();
 
     try
     {
@@ -109,20 +155,22 @@ else
       await stream.CopyToAsync(memoryStream);
       State.PowerPointFile = memoryStream.ToArray();
 
-      var (badgesPerPage, errors) = TemplateService.ValidateTemplate(State.PowerPointFile);
-      ValidationErrors.AddRange(errors);
-      State.BadgesPerPage = badgesPerPage;
+      DiscoveredTemplates = TemplateService.DiscoverTemplates(State.PowerPointFile);
+      State.BadgesPerPage = DiscoveredTemplates.Count();
+
+      logger.LogInformation(State.BadgesPerPage.ToString());
 
       await AppInsights.TrackEvent("ValidateTemplate", new Dictionary<string, object?>{ 
         { "FileSize", e.File.Size },
         { "BadgesPerPage", State.BadgesPerPage },
-        { "ValidationErrorCount", ValidationErrors.Count },
+        { "DiscoveredTemplates", DiscoveredTemplates },
         { "Duration", sw.ElapsedMilliseconds },
       });
     }
     catch (Exception ex)
     {
-      ValidationErrors.Add($"This file seems corupt and cannot be read. Error: {ex}");
+      logger.LogError(ex.StackTrace);
+      // TODO Handle error! 
 
       await AppInsights.TrackException(new Error { 
         Name = ex.GetType()!.AssemblyQualifiedName!,
