@@ -71,7 +71,7 @@ namespace NameBadgeAutomater
       return indexedTemplates;
     }
 
-    public bool IsTemplateValid(IEnumerable<NameTemplateResult> discoveredTemplates) => 
+    public bool IsTemplateValid(IEnumerable<NameTemplateResult> discoveredTemplates) =>
       discoveredTemplates.Count() > 0 &&
       discoveredTemplates.All(x => x.FirstCount > 0 && x.LastCount > 0);
 
@@ -110,8 +110,8 @@ namespace NameBadgeAutomater
         var person = peopleGroup[i];
 
         newSlidePart.Slide.InnerXml = newSlidePart.Slide.InnerXml
-          .Replace("first_".ToString().Replace("\\d", (i + 1).ToString()), person.FirstName)
-          .Replace("last_".ToString().Replace("\\d", (i + 1).ToString()), person.LastName);
+          .Replace("first_" + (i + 1).ToString(), person.FirstName)
+          .Replace("last_" + (i + 1).ToString(), person.LastName);
       }
 
       if (blankUnusedBadges)
@@ -119,8 +119,8 @@ namespace NameBadgeAutomater
         for (var i = peopleGroup.Count(); i < badgesPerPage; i++)
         {
           newSlidePart.Slide.InnerXml = newSlidePart.Slide.InnerXml
-          .Replace("first_".ToString().Replace("\\d", (i + 1).ToString()), string.Empty)
-          .Replace("last_".ToString().Replace("\\d", (i + 1).ToString()), string.Empty);
+          .Replace("first_" + (i + 1), string.Empty)
+          .Replace("last_" + (i + 1), string.Empty);
         }
       }
 
