@@ -1,5 +1,5 @@
-@inject Blazored.LocalStorage.ISyncLocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 @inject IApplicationInsights AppInsights
 
 @if (IsVisible)
@@ -11,40 +11,20 @@
       class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:text-blue-300 dark:bg-blue-900">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
           </path>
         </svg>
-        <span class="sr-only">Analytics icon</span>
+        <span class="sr-only">Refresh icon</span>
       </div>
       <div class="ml-3 text-sm font-normal">
-        <span class="mb-1 text-sm font-semibold text-gray-900 dark:text-white">Analytics</span>
-        @if (IsEnabled)
-        {
-          <div class="mb-2 text-sm font-normal">
-            This app captures anonymous analytics so that it can be made better for you.
-          </div>
-        }
-        else
-        {
-          <div class="mb-2 text-sm font-normal">
-            Help us help you and turn anonymous analytics back on.
-          </div>
-        }
+        <span class="mb-1 text-sm font-semibold text-gray-900 dark:text-white">Update available</span>
+        <div class="mb-2 text-sm font-normal">Refresh the page to use the latest version available with new features and
+          fixes.</div>
         <div class="grid grid-cols-2 gap-2">
-          @if (IsEnabled)
-          {
-            <span @onclick="() => Disable()"
+          <span @onclick="() => Refresh()"
           class="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800">
-              Disable
-            </span>
-          }
-          else
-          {
-            <span @onclick="() => Enable()"
-          class="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800">
-              Enable
-            </span>
-          }
+            Refresh
+          </span>
         </div>
       </div>
       <button type="button"
@@ -63,21 +43,35 @@
 }
 
 @code {
-  const string DisableTelemetryStorageKey = "disableTelemetry";
-  bool IsVisible = true;
-  bool IsEnabled => !LocalStorage.GetItem<bool>(DisableTelemetryStorageKey);
+  bool IsVisible = false;
 
-  private void Disable()
+  protected override async Task OnInitializedAsync()
   {
-    LocalStorage.SetItem(DisableTelemetryStorageKey, true);
-    AppInsights.TrackEvent("TelemetryDisabled");
+    await RegisterForUpdateAvailableNotification();
+  }
+
+  private async Task RegisterForUpdateAvailableNotification()
+  {
+    await JS.InvokeAsync<object>(
+    identifier: "registerForUpdateAvailableNotification",
+    DotNetObjectReference.Create(this),
+    nameof(OnUpdateAvailable));
+  }
+
+  [JSInvokable(nameof(OnUpdateAvailable))]
+  public Task OnUpdateAvailable()
+  {
+    IsVisible = true;
+
+    StateHasChanged();
+
+    return Task.CompletedTask;
+  }
+
+  private void Refresh()
+  {
+    AppInsights.TrackEvent("ManualUpdate");
     NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
   }
 
-  private void Enable()
-  {
-    LocalStorage.SetItem(DisableTelemetryStorageKey, false);
-    AppInsights.TrackEvent("TelemetryEnabled");
-    NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
-  }
 }
