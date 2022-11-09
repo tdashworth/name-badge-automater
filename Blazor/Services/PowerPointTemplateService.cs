@@ -60,6 +60,8 @@ namespace NameBadgeAutomater
                               })
                               .ToList();
 
+      if (!indexedTemplates.Any()) return Enumerable.Empty<NameTemplateResult>();  
+
       // Add missing indexes.
       for (int index = 1; index <= indexedTemplates.Max(x => x.Index); index++)
       {

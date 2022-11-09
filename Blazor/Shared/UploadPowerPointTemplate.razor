@@ -67,71 +67,83 @@
   </div>
 }
 
-@if (DiscoveredTemplates.Any())
+@if (State.PowerPointFile is not null && !IsValidatingFile)
 {
   <h3 class="mt-2 mb-4 text-l tracking-tight font-bold text-gray-900 dark:text-white">Template Validation</h3>
   <p class="mb-4 text-gray-600 dark:text-gray-400">
     Please review the discovered placeholders below and resolve the issues, if any, before continuing.
   </p>
-  <div class="overflow-x-auto relative mb-4 sm:rounded-lg">
-    <table class="w-full text-sm text-left text-gray-600 dark:text-gray-400">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-        <tr>
-          <th scope="col" class="py-3 px-6">
-            <code>n</code>
-          </th>
-          <th scope="col" class="py-3 px-6">
-            <code>first_n</code>
-          </th>
-          <th scope="col" class="py-3 px-6">
-            <code>last_n</code>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach (var discoveredTemplate in DiscoveredTemplates.OrderBy(x => x.Index))
-        {
-          <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-            <th scope="row" class="py-2 px-4">
-              <code>@discoveredTemplate.Index</code>
+  @if (DiscoveredTemplates is not null && DiscoveredTemplates.Any())
+  {
+    <div class="overflow-x-auto relative mb-4 sm:rounded-lg">
+      <table class="w-full text-sm text-left text-gray-600 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <tr>
+            <th scope="col" class="py-3 px-6">
+              <code>n</code>
             </th>
-            <td class="py-4 px-6">
-              @if (discoveredTemplate.FirstCount == 0)
-              {
-                <span class="flex gap-2">
-                  <CrossIcon />
-                  None found, at least one expected
-                </span>
-              }
-              else
-              {
-                <span class="flex gap-2">
-                  <TickIcon />
-                  @discoveredTemplate.FirstCount @(discoveredTemplate.FirstCount == 0 ? "placeholder" : "placeholders") found
-                </span>
-              }
-            </td>
-            <td class="py-4 px-6">
-              @if (discoveredTemplate.LastCount == 0)
-              {
-                <span class="flex gap-2">
-                  <CrossIcon />
-                  None found, at least one expected
-                </span>
-              }
-              else
-              {
-                <span class="flex gap-2">
-                  <TickIcon />
-                  @discoveredTemplate.LastCount @(discoveredTemplate.LastCount == 0 ? "placeholder" : "placeholders") found
-                </span>
-              }
-            </td>
+            <th scope="col" class="py-3 px-6">
+              <code>first_n</code>
+            </th>
+            <th scope="col" class="py-3 px-6">
+              <code>last_n</code>
+            </th>
           </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          @foreach (var discoveredTemplate in DiscoveredTemplates.OrderBy(x => x.Index))
+          {
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              <th scope="row" class="py-2 px-4">
+                <code>@discoveredTemplate.Index</code>
+              </th>
+              <td class="py-4 px-6">
+                @if (discoveredTemplate.FirstCount == 0)
+                {
+                  <span class="flex gap-2">
+                    <CrossIcon />
+                    None found, at least one expected
+                  </span>
+                }
+                else
+                {
+                  <span class="flex gap-2">
+                    <TickIcon />
+                    @discoveredTemplate.FirstCount @(discoveredTemplate.FirstCount == 0 ? "placeholder" : "placeholders") found
+                  </span>
+                }
+              </td>
+              <td class="py-4 px-6">
+                @if (discoveredTemplate.LastCount == 0)
+                {
+                  <span class="flex gap-2">
+                    <CrossIcon />
+                    None found, at least one expected
+                  </span>
+                }
+                else
+                {
+                  <span class="flex gap-2">
+                    <TickIcon />
+                    @discoveredTemplate.LastCount @(discoveredTemplate.LastCount == 0 ? "placeholder" : "placeholders") found
+                  </span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (!string.IsNullOrEmpty(ErrorText))
+  {
+    <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
+      <CrossIcon Class="inline-block"/>
+      <span class="font-medium">Validation error</span>
+      @((MarkupString)ErrorText)
+    </div>
+  }
 }
 
 @if (!IsValidatingFile)
@@ -160,8 +172,11 @@ else
 
 @code {
   bool IsValidatingFile = false;
-  bool CanContinue => State.PowerPointFile is not null && TemplateService.IsTemplateValid(DiscoveredTemplates);
-  IEnumerable<NameTemplateResult> DiscoveredTemplates = Enumerable.Empty<NameTemplateResult>();
+  bool CanContinue => State.PowerPointFile is not null &&
+  DiscoveredTemplates is not null &&
+  TemplateService.IsTemplateValid(DiscoveredTemplates);
+  string ErrorText = string.Empty;
+  IEnumerable<NameTemplateResult>? DiscoveredTemplates = default;
 
   string FileName { get; set; } = string.Empty;
 
@@ -170,11 +185,11 @@ else
 
   async Task OnFileSelected(InputFileChangeEventArgs e)
   {
+    Reset();
+
     var sw = Stopwatch.StartNew();
 
     FileName = e.File.Name;
-
-    IsValidatingFile = true;
 
     try
     {
@@ -186,7 +201,10 @@ else
       DiscoveredTemplates = TemplateService.DiscoverTemplates(State.PowerPointFile);
       State.BadgesPerPage = DiscoveredTemplates.Count();
 
-      logger.LogInformation(State.BadgesPerPage.ToString());
+      if (DiscoveredTemplates.Count() == 0)
+      {
+        throw new Exception("It looks like no placeholders were found. Please ensure there is atleast <code>first_1</code> and <code>last_1</code> and that the whole placeholder has matching font styling.");
+      }
 
       await AppInsights.TrackEvent("ValidateTemplate", new Dictionary<string, object?>{
 { "FileSize", e.File.Size },
@@ -197,8 +215,7 @@ else
     }
     catch (Exception ex)
     {
-      logger.LogError(ex.StackTrace);
-      // TODO Handle error!
+      ErrorText = ex.Message;
 
       await AppInsights.TrackException(new Error
       {
@@ -215,5 +232,12 @@ else
   }
 
   Task Continue() => OnNext.InvokeAsync();
+
+  void Reset() {
+    IsValidatingFile = true;
+    DiscoveredTemplates = null;
+    ErrorText = string.Empty;
+    StateHasChanged();
+  }
 
 }
