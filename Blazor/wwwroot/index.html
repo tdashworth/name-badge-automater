@@ -45,7 +45,7 @@
                 enableCorsCorrelation: true,
                 enableRequestHeaderTracking: true,
                 enableResponseHeaderTracking: true,
-                disableTelemetry: window.localStorage.getItem("disableTelemetry") == "true",
+                disableTelemetry: window.location.host.startsWith("localhost") || window.localStorage.getItem("disableTelemetry") == "true",
             }
         });
     </script>
