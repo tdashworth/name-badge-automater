@@ -8,7 +8,7 @@
 
 <ul class="space-y-4 mb-4">
   <li class="flex items-center text-gray-600 dark:text-gray-400">
-    @if(State.PowerPointFile is null) { <CrossIcon /> } else { <TickIcon /> }
+    @if(State.PowerPointFile is null || State.BadgesPerPage == 0) { <CrossIcon /> } else { <TickIcon /> }
     <p class="ml-3">
       PowerPoint template uploaded
     </p>
@@ -71,7 +71,9 @@ else
   @onclick="Back">Back</button>
 
 @code {
-  int pageCount => (int)Math.Round(State.People.Count() / (double)State.BadgesPerPage, MidpointRounding.ToPositiveInfinity);
+  int pageCount => State.BadgesPerPage == 0 
+                    ?  0 
+                    : (int)Math.Round(State.People.Count() / (double)State.BadgesPerPage, MidpointRounding.ToPositiveInfinity);
   bool BlankUnusedBadges { get; set; } = true;
   bool IsLoading = false;
   bool CanContinue => State.PowerPointFile is not null && State.People.Any();
