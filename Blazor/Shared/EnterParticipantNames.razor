@@ -115,6 +115,6 @@
       return new Person { FirstName = nameParts[0].Trim().ToSentenceCase(), LastName = nameParts[1].Trim().ToSentenceCase() };
     }
 
-    return null;
+    return new Person { FirstName = rawName };
   }
 }
