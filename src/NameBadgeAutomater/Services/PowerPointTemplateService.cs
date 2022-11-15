@@ -17,12 +17,12 @@ public class PowerPointTemplateService
     }
     catch (Exception ex)
     {
-      throw new Exception($"This file seems corrupt and cannot be read. Error: {ex}");
+      throw new Exception($"This file seems corrupt and cannot be read. Error: {ex.Message}");
     }
 
     if (presentationDocument?.PresentationPart is null)
     {
-      throw new Exception("This file seems corrupt and cannot be read. Error: No Presentation XML part.");
+      throw new Exception("This file seems corrupt and cannot be read. Error: Specified part does not exist in the package.");
     }
 
     if (presentationDocument.PresentationPart.SlideParts.Count() == 0)

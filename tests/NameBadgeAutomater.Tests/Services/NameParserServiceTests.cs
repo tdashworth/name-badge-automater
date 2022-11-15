@@ -84,7 +84,7 @@ public class NameParserServiceTests
 
     private static string EmailListRawNames = 
     """
-    First1 Last1 <ignore@emial.com>; First2 Last2 <ignore@email.com>;
+    First1 Last1 <ignore@email.com>; First2 Last2 <ignore@email.com>;
     """;
     
     private static List<Person> ExpectedPeople = new List<Person>{

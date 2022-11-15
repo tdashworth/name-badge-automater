@@ -23,6 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="TestFiles/*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\NameBadgeAutomater\NameBadgeAutomater.csproj" />
   </ItemGroup>
 
