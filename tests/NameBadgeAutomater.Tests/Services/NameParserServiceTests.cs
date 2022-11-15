@@ -69,20 +69,23 @@ public class NameParserServiceTests
         new object[] { EmailListRawNames, ExpectedPeople },
     };
 
-    private static string SimpleRawNames = string.Join(Environment.NewLine, new List<string> {
-        "First1 Last1",
-        "First2 Last2",
-    });
+    private static string SimpleRawNames = 
+    """
+    First1 Last1
+    First2 Last2
+    """;
+    private static string RawNamesWithEmptyLine = 
+    """
+    First1 Last1
 
-    private static string RawNamesWithEmptyLine = string.Join(Environment.NewLine, new List<string> {
-        "First1 Last1",
-        "",
-        "First2 Last2",
-    });
+    First2 Last2
 
-    private static string EmailListRawNames = string.Join(Environment.NewLine, new List<string> {
-        "First1 Last1 <ignore@emial.com>; First2 Last2 <ignore@email.com>;",
-    });
+    """;
+
+    private static string EmailListRawNames = 
+    """
+    First1 Last1 <ignore@emial.com>; First2 Last2 <ignore@email.com>;
+    """;
     
     private static List<Person> ExpectedPeople = new List<Person>{
         new Person { FirstName = "First1", LastName = "Last1" },
