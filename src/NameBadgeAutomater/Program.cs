@@ -10,6 +10,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddSingleton<AppState>();
 builder.Services.AddSingleton<PowerPointTemplateService>();
+builder.Services.AddSingleton<NameParserService>();
 
 builder.Services.AddBeforeUnload();
 builder.Services.AddBlazorApplicationInsights();
