@@ -1,6 +1,5 @@
-@using System.Text
-@using System.Text.RegularExpressions
 @inject AppState State
+@inject NameParserService NameParserService
 
 <h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Paticipant Names</h2>
 
@@ -18,7 +17,7 @@
 
 <textarea
   class="block p-2.5 mb-4 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-  id="rawNames" rows="20" @bind="RawNames" @bind:event="oninput"></textarea>
+  id="rawNames" rows="20" @bind="State.RawNames" @bind:event="oninput"></textarea>
 
 @* Validation Errors *@
 
@@ -32,10 +31,7 @@
 
 
 @code {
-  string RawNames { get; set; } = string.Empty;
-  bool AreNamesEntered => !string.IsNullOrWhiteSpace(RawNames);
-
-  Regex EmailListRegex = new Regex("<.*@.*>");
+  bool AreNamesEntered => !string.IsNullOrWhiteSpace(State.RawNames);
 
   [Parameter]
   public EventCallback OnNext { get; set; }
@@ -43,78 +39,12 @@
   [Parameter]  
   public EventCallback OnBack { get; set; } 
 
-  protected override Task OnInitializedAsync()
-  {
-    if (State.People.Any())
-    {
-      var stringBuilder = new StringBuilder();
-
-      State.People.ForEach(person => stringBuilder.AppendLine($"{person.FirstName} {person.LastName}"));
-
-      RawNames = stringBuilder.ToString();
-    }
-    return base.OnInitializedAsync();
-  }
-
-  static string Space = " ";
-  static string Tab = "	";
-  static string Comma = ",";
-  static string At = "@";
-  static string Period = ".";
-
   Task ProcessRawNames()
   {
-    if (!string.IsNullOrWhiteSpace(RawNames))
-    {
-      State.People = RawNames
-      .Split(Environment.NewLine)
-      .SelectMany(line => line.Split(";"))
-      .Select(ParseRawName)
-      .Where(person => person is not null)
-      .Cast<Person>()
-      .ToList();
-    }
+    State.People = NameParserService.ParseRawNames(State.RawNames);
 
     return OnNext.InvokeAsync();
   }
 
   Task Back() => OnBack.InvokeAsync();
-
-  Person? ParseRawName(string rawName)
-  {
-    if (string.IsNullOrWhiteSpace(rawName)) return null; // No name.
-
-    rawName = rawName.Trim();
-
-    if (EmailListRegex.IsMatch(rawName)) // FirstName LastName(s) <*@*>, LastName(s), FirstName <*@*>
-    { 
-      rawName = EmailListRegex.Replace(rawName, string.Empty);
-    }
-
-    if (rawName.Contains(At)) // FirstName.LastName@email.com
-    {
-      var nameParts = rawName.Split(At).First().Split(Period);
-      return new Person { FirstName = nameParts[0].Trim().ToSentenceCase(), LastName = nameParts[1].Trim().ToSentenceCase() };
-    }
-
-    if (rawName.Contains(Comma)) // LastName(s), FirstName
-    {
-      var nameParts = rawName.Split(Comma);
-      return new Person { FirstName = nameParts[1].Trim().ToSentenceCase(), LastName = nameParts[0].Trim().ToSentenceCase() };
-    }
-
-    if (rawName.Contains(Tab)) // FirstName	LastName(s) (tab)
-    {
-      var nameParts = rawName.Split(Tab, 2, StringSplitOptions.RemoveEmptyEntries);
-      return new Person { FirstName = nameParts[0].Trim().ToSentenceCase(), LastName = nameParts[1].Trim().ToSentenceCase() };
-    }
-
-    if (rawName.Contains(Space)) // FirstName LastName(s)
-    {
-      var nameParts = rawName.Split(Space, 2, StringSplitOptions.RemoveEmptyEntries);
-      return new Person { FirstName = nameParts[0].Trim().ToSentenceCase(), LastName = nameParts[1].Trim().ToSentenceCase() };
-    }
-
-    return new Person { FirstName = rawName };
-  }
 }
