@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+
+    - name: Test application
+      run: dotnet test tests/NameBadgeAutomater.Tests/NameBadgeAutomater.Tests.csproj -c Release
     
     # base href url value should be changed so that resources like CSS and scripts can load properly. 
     - name: Rewrite base href
