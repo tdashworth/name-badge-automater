@@ -1,6 +1,4 @@
-name: Deploy Blazor WASM to GitHub Page
-env:
-  PUBLISH_DIR: Blazor/bin/Release/net6.0/publish/wwwroot
+name: Deploy to GitHub Page
 
 # Controls when the action will run
 on:
@@ -8,7 +6,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -19,7 +17,16 @@ jobs:
 
     - name: Test application
       run: dotnet test tests/NameBadgeAutomater.Tests/NameBadgeAutomater.Tests.csproj -c Release
-    
+  
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.x.x'
+
     # base href url value should be changed so that resources like CSS and scripts can load properly. 
     - name: Rewrite base href
       if: success()
@@ -33,13 +40,13 @@ jobs:
         
     # add .nojekyll file to tell GitHub pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
     - name: Add .nojekyll file
-      run: touch ${{ env.PUBLISH_DIR }}/.nojekyll
+      run: touch src/NameBadgeAutomater/bin/Release/net7.0/publish/wwwroot/.nojekyll
 
     - name: Commit to GitHub pages Repo
       if: success()
       uses: crazy-max/ghaction-github-pages@v1.5.1
       with:
         target_branch: gh-pages
-        build_dir: ${{ env.PUBLISH_DIR }}
+        build_dir: src/NameBadgeAutomater/bin/Release/net7.0/publish/wwwroot
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
