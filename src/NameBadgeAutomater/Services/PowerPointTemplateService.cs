@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 
@@ -5,7 +6,7 @@ namespace NameBadgeAutomater;
 
 public class PowerPointTemplateService
 {
-  private static readonly Regex TEMPLATE_REGEX = new Regex("(first|last)_\\d+", RegexOptions.Compiled);
+  private static readonly Regex TEMPLATE_REGEX = new Regex("(first|last)_\\d+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
   public IEnumerable<NameTemplateResult> DiscoverTemplates(byte[] fileBytes)
   {
@@ -53,8 +54,8 @@ public class PowerPointTemplateService
                             .Select(x => new NameTemplateResult
                             {
                               Index = int.Parse(x.Key),
-                              FirstCount = x.FirstOrDefault(xx => xx.Key.StartsWith("first")).Value,
-                              LastCount = x.FirstOrDefault(xx => xx.Key.StartsWith("last")).Value,
+                              FirstCount = x.FirstOrDefault(xx => xx.Key.StartsWith("first", true, CultureInfo.CurrentUICulture)).Value,
+                              LastCount = x.FirstOrDefault(xx => xx.Key.StartsWith("last", true, CultureInfo.CurrentUICulture)).Value,
                             })
                             .ToList();
 
@@ -110,8 +111,8 @@ public class PowerPointTemplateService
       var person = peopleGroup[i];
 
       newSlidePart.Slide.InnerXml = newSlidePart.Slide.InnerXml
-        .Replace("first_" + (i + 1).ToString(), person.FirstName)
-        .Replace("last_" + (i + 1).ToString(), person.LastName);
+        .Replace("first_" + (i + 1).ToString(), person.FirstName, true, CultureInfo.CurrentUICulture)
+        .Replace("last_" + (i + 1).ToString(), person.LastName, true, CultureInfo.CurrentUICulture);
     }
 
     if (blankUnusedBadges)
@@ -119,8 +120,8 @@ public class PowerPointTemplateService
       for (var i = peopleGroup.Count(); i < badgesPerPage; i++)
       {
         newSlidePart.Slide.InnerXml = newSlidePart.Slide.InnerXml
-        .Replace("first_" + (i + 1), string.Empty)
-        .Replace("last_" + (i + 1), string.Empty);
+          .Replace("first_" + (i + 1), string.Empty, true, CultureInfo.CurrentUICulture)
+          .Replace("last_" + (i + 1), string.Empty, true, CultureInfo.CurrentUICulture);
       }
     }
 
