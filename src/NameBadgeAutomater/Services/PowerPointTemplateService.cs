@@ -111,6 +111,8 @@ public class PowerPointTemplateService
       var person = peopleGroup[i];
 
       newSlidePart.Slide.InnerXml = newSlidePart.Slide.InnerXml
+        .Replace("FIRST_" + (i + 1).ToString(), person.FirstName.ToUpperInvariant())
+        .Replace("LAST_" + (i + 1).ToString(), person.LastName.ToUpperInvariant())
         .Replace("first_" + (i + 1).ToString(), person.FirstName, true, CultureInfo.CurrentUICulture)
         .Replace("last_" + (i + 1).ToString(), person.LastName, true, CultureInfo.CurrentUICulture);
     }
