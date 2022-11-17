@@ -1,3 +1,4 @@
+using System.Xml.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Validation;
 using FluentAssertions.Execution;
@@ -76,33 +77,39 @@ public class PowerPointTemplateServiceTests
 
     public static IEnumerable<object[]> GenerateFromTemplateTestData() => new List<object[]> 
     {
-        new object[] { "EightTemplatesOnce.pptx", 8, EightPeople, true, "Result_EightByEight.pptx" },
-        new object[] { "EightTemplatesOnce.pptx", 8, TenPeople, true, "Result_EightByTen.pptx" },
-        new object[] { "OneTemplateTwice.pptx", 1, OnePerson, true, "Result_OneByOne.pptx" },
-        new object[] { "OneTemplateTwice.pptx", 1, TwoPeople, true, "Result_OneByTwo.pptx" },
+        new object[] { "EightTemplatesOnce.pptx", 8, People.Take(8), true, "Result_EightByEight.pptx" },
+        new object[] { "EightTemplatesOnce.pptx", 8, People.Take(10), true, "Result_EightByTen.pptx" },
+        new object[] { "OneTemplateTwice.pptx", 1, People.Take(1), true, "Result_OneByOne.pptx" },
+        new object[] { "OneTemplateTwice.pptx", 1, People.Take(2), true, "Result_OneByTwo.pptx" },
+        new object[] { "DifferentCasedNames.pptx", 6, People.Take(6), true, "Result_DifferentCasedNames.pptx" },
     };
 
     [Theory]
     [MemberData(nameof(GenerateFromTemplateTestData))]
-    public void GenerateFromTemplate_ShouldGenerateNewFile(string templateFileName, int badgesPerPage, List<Person> people, bool removeBlanks, string expectedFileName)
+    public void GenerateFromTemplate_ShouldGenerateNewFile(string templateFileName, int badgesPerPage, IEnumerable<Person> people, bool removeBlanks, string expectedFileName)
     {
         //Arrange
         var sut = new PowerPointTemplateService();
         var templateFileBytes = File.ReadAllBytes(Path.Combine("TestFiles", templateFileName));
 
         //Act
-        var result = sut.GenerateFromTemplate(templateFileBytes, people, badgesPerPage, removeBlanks);
+        var result = sut.GenerateFromTemplate(templateFileBytes, people.ToList(), badgesPerPage, removeBlanks);
         var resultDocument = PresentationDocument.Open(new MemoryStream(result), true);
 
         //Assert
         var validationResult = OpenXmlValidator.Validate(resultDocument);
         validationResult.Should().BeEmpty();
 
-        AssertionOptions.FormattingOptions.MaxDepth = 100;
-
         var expectedFileBytes = File.ReadAllBytes(Path.Combine("TestFiles", expectedFileName));
         var expectedDocument = PresentationDocument.Open(new MemoryStream(expectedFileBytes), true);
-        resultDocument.PresentationPart!.SlideParts.Should().BeEquivalentTo(expectedDocument.PresentationPart!.SlideParts, options => options.Including(x => x.Slide.InnerXml));
+        for (int i = 0; i < expectedDocument.PresentationPart!.SlideParts.Count(); i++)
+        {
+            var resultSlide = resultDocument.PresentationPart!.SlideParts.Skip(i).FirstOrDefault();
+            var expectedSlide = expectedDocument.PresentationPart!.SlideParts.Skip(i).FirstOrDefault();
+
+            resultSlide.Should().NotBeNull();
+            XDocument.Parse(resultSlide!.Slide.OuterXml).Should().BeEquivalentTo(XDocument.Parse(expectedSlide!.Slide.OuterXml));
+        }
 
         // TODO More assertions would be useful...
     }
@@ -145,27 +152,7 @@ public class PowerPointTemplateServiceTests
 
     private static IEnumerable<NameTemplateResult> NoTemplatesResult = new List<NameTemplateResult> {};
 
-    private static List<Person> OnePerson = new List<Person> {
-        new Person { FirstName = "First", LastName = "Last" },
-    };
-
-    private static List<Person> TwoPeople = new List<Person> {
-        new Person { FirstName = "First1", LastName = "Last1" },
-        new Person { FirstName = "First2", LastName = "Last2" },
-    };
-
-    private static List<Person> EightPeople = new List<Person> {
-        new Person { FirstName = "First1", LastName = "Last1" },
-        new Person { FirstName = "First2", LastName = "Last2" },
-        new Person { FirstName = "First3", LastName = "Last3" },
-        new Person { FirstName = "First4", LastName = "Last4" },
-        new Person { FirstName = "First5", LastName = "Last5" },
-        new Person { FirstName = "First6", LastName = "Last6" },
-        new Person { FirstName = "First7", LastName = "Last7" },
-        new Person { FirstName = "First8", LastName = "Last8" },
-    };
-
-    private static List<Person> TenPeople = new List<Person> {
+    private static List<Person> People = new List<Person> {
         new Person { FirstName = "First1", LastName = "Last1" },
         new Person { FirstName = "First2", LastName = "Last2" },
         new Person { FirstName = "First3", LastName = "Last3" },
