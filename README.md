@@ -6,7 +6,7 @@ This application simply automates the process of entering many names into badge 
 
 ### Badge template file
 
-Badge templates must be a Powerpoint file with a single slide that will be duplicated based on the number of name and name placeholders replaced. There are two example templates provided but any file meeting the criteria should work. The required placeholders `first_n` and `last_n`, where `n` is the badge index, define where the names will be placed. These can be whatever style, size, location to suite your design. Addtionally, `FIRST_N` and `LAST_N` will transform the given name to uppercase. 
+Badge templates must be a PowerPoint file with a single slide that will be duplicated based on the number of name and name placeholders replaced. There are two example templates provided but any file meeting the criteria should work. The required placeholders `first_n` and `last_n`, where `n` is the badge index, define where the names will be placed. These can be whatever style, size, location to suite your design. Additionally, `FIRST_N` and `LAST_N` will transform the given name to uppercase. 
 
 ### Parsing names
 

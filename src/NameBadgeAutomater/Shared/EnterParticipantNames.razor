@@ -4,8 +4,7 @@
 <h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Paticipant Names</h2>
 
 <p class="mb-4 text-gray-600 dark:text-gray-400">
-  Enter a list of names to generator badges with. Each person should be on a new line and can be either their of the
-  following formats:
+  Enter a list of names to generator badges with. Each person should be on a new line and can be either of the following formats:
 </p>
 <ul class="mb-4 ml-5 text-gray-600 dark:text-gray-400 list-disc">
   <li>FirstName LastName(s)</li>
@@ -14,12 +13,13 @@
   <li>FirstName LastName(s)  &lt;some.email@email.com&gt;</li>
   <li>LastName(s), FirstName &lt;some.email@email.com&gt;</li>
 </ul>
+<p class="mb-4 text-gray-600 dark:text-gray-400">
+  <span class="italic">Tip:</span> Use can paste a list of email recipients separated by <code>;</code> without placing them on individual lines.
+</p>
 
 <textarea
   class="block p-2.5 mb-4 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
   id="rawNames" rows="20" @bind="State.RawNames" @bind:event="oninput"></textarea>
-
-@* Validation Errors *@
 
 <button type="button"
   class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
@@ -28,7 +28,6 @@
 <button type="button"
   class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
   @onclick="Back">Back</button>
-
 
 @code {
   bool AreNamesEntered => !string.IsNullOrWhiteSpace(State.RawNames);
