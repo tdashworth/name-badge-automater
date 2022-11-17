@@ -113,7 +113,7 @@
                 {
                   <span class="flex gap-2">
                     <TickIcon />
-                    @discoveredTemplate.FirstCount @(discoveredTemplate.FirstCount == 0 ? "placeholder" : "placeholders") found
+                    @discoveredTemplate.FirstCount @(discoveredTemplate.FirstCount == 1 ? "placeholder" : "placeholders") found
                   </span>
                 }
               </td>
@@ -129,7 +129,7 @@
                 {
                   <span class="flex gap-2">
                     <TickIcon />
-                    @discoveredTemplate.LastCount @(discoveredTemplate.LastCount == 0 ? "placeholder" : "placeholders") found
+                    @discoveredTemplate.LastCount @(discoveredTemplate.LastCount == 1 ? "placeholder" : "placeholders") found
                   </span>
                 }
               </td>
