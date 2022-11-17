@@ -42,7 +42,7 @@
 
 <div class="mb-4 flex justify-center items-center w-full">
   <label for="dropzone-file"
-    class="flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+    class="relative flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
     <div class="flex flex-col justify-center items-center pt-5 pb-6">
       <svg aria-hidden="true" class="mb-3 w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg">
@@ -53,7 +53,7 @@
         drag and drop</p>
       <p class="text-xs text-gray-600 dark:text-gray-400">A single slide <code>.pptx</code> file</p>
     </div>
-    <InputFile OnChange="OnFileSelected" id="dropzone-file" type="file" class="hidden" accept=".pptx" />
+    <InputFile OnChange="OnFileSelected" id="dropzone-file" type="file" class="absolute h-full w-full opacity-0" accept=".pptx" />
   </label>
 </div>
 
