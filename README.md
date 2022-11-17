@@ -1,47 +1,22 @@
 # Name Badge Automater
 
-## Summary 
+This application simply automates the process of entering many names into badge templates. 
 
-A wizard style application that: 
+**Try it live [here](https://tdashworth.github.io/name-badge-automater/)!**
 
-1. Provide Template
-  - a PowerPoint template to download (a single page with 8 badges and first/last name placeholders)
-  - upload designed template
-  - validate template
-    - expect one slide
-    - 8 first names and 8 last names templates
+### Badge template file
 
-2. Provide Names
-  - paste (into textbox) a list of people, one per line
-  - can be full name or email
-    - name: split by first " "
-    - email: remove @* and split by "."
-  - auto map raw list to first/last names 
-  - review and edit these names
-    - inline, two textboxes and a delete button
-    - add button
+Badge templates must be a Powerpoint file with a single slide that will be duplicated based on the number of name and name placeholders replaced. There are two example templates provided but any file meeting the criteria should work. The required placeholders `first_n` and `last_n`, where `n` is the badge index, define where the names will be placed. These can be whatever style, size, location to suite your design. Addtionally, `FIRST_N` and `LAST_N` will transform the given name to uppercase. 
 
-3. Download Badges 
-  - generate button
-  - chunk names into groups of 8
-    - copy slide 1 (template)
-    - populate with names
-    - repeat
-    - remaining badges are blanked (no first/last name) (maybe an option?)
-  - delete slide 1
-  - download file 
+### Parsing names
 
+For ease, names can be pasted into a free textbox then parsed into first and last names. There are a number of formats supported including: 
+- FirstName LastName(s)
+- LastName(s), FirstName
+- FirstName.LastName@email.com
+- FirstName LastName(s) <some.email@email.com>
+- LastName(s), FirstName <some.email@email.com>
 
-  https://www.bootstrapdash.com/product/free-bootstrap-wizard/#product-demo-section
-  https://dribbble.com/shots/3051474-Wizard-Ui-Design/attachments/641041
-  https://github.com/dotnet/aspnetcore/issues/17730
-  https://dev.to/madhust/how-to-publish-blazor-webassembly-application-to-github-pages-using-github-action-54h4
-  https://codepen.io/mithicher/pen/wvabGoN
-  https://tailwindcomponents.com/component/wizard-steps-bar-with-tailwind-css
+### Generation
 
-  TODO
-  - Exception handling 
-  - Worker Service
-  - Wizard Design 
-  - GitHub Pages deploy
-  - Application Insights 
+Once a valid template file and at least one name is provided, you can generate populated badges. This process, along with everything this app does, is local to your browser so there is no concern your data is leaked. Because of this, the browser will freeze but this shouldn't be for long (depending on the template and number of names). You have the option to tidy up unused name placeholder. 
