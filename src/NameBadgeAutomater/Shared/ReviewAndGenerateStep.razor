@@ -22,7 +22,7 @@
 </ul>
 
 <p class="mb-4 text-gray-600 dark:text-gray-400">
-  You have provided @State.People.Count() names to generate badges for. That will be @pageCount pages.
+  You have provided @State.People.Count() @(State.People.Count() == 1 ? "name" : "names") to generate badges for. That will be @pageCount @(pageCount == 1 ? "page" : "pages").
 </p>
 
 <label for="default-toggle" class="inline-flex relative items-center cursor-pointer mb-4">
