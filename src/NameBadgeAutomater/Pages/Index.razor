@@ -15,15 +15,15 @@
 
     @if (stage == WizardStages.UploadTemplate)
     {
-      <UploadPowerPointTemplate OnNext="Next" />
+      <UploadPowerPointTemplateStep OnNext="Next" />
     }
     else if (stage == WizardStages.EnterNames)
     {
-      <EnterParticipantNames OnNext="@Next" OnBack="@Back" />
+      <EnterParticipantNamesStep OnNext="@Next" OnBack="@Back" />
     }
     else if (stage == WizardStages.FormatNames)
     {
-      <FormatParticipantNames OnNext="@Next" OnBack="@Back" />
+      <FormatParticipantNamesStep OnNext="@Next" OnBack="@Back" />
     }
     else if (stage == WizardStages.ReviewAndGenerate)
     {
@@ -92,10 +92,10 @@
     if (isMidProcess)
     {
       AppInsights.TrackEvent("LeavingMidProcess", new Dictionary<string, object?> {
-{ "TemplateFile", State.PowerPointFile is not null },
-{ "People", State.People.Any() },
-{ "Page", stage.ToString() }
-});
+        { "TemplateFile", State.PowerPointFile is not null },
+        { "People", State.People.Any() },
+        { "Page", stage.ToString() },
+      });
     }
 
     args.CancelRequested = isMidProcess;
