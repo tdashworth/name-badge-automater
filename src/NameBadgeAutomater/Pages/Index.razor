@@ -6,37 +6,29 @@
 
 <PageTitle>Name Badge Automater</PageTitle>
 
-<div class="relative min-h-screen">
-  <article class="p-8 max-w-3xl mx-auto">
+<WizardSteps stage="@stage" OnTabClicked="TabClicked" />
 
-    <h1 class="mb-4 text-4xl tracking-tight font-bold text-gray-900 dark:text-white">Name Badge Automater</h1>
+@if (stage == WizardStages.UploadTemplate)
+{
+  <UploadPowerPointTemplateStep OnNext="Next" />
+}
+else if (stage == WizardStages.EnterNames)
+{
+  <EnterParticipantNamesStep OnNext="@Next" OnBack="@Back" />
+}
+else if (stage == WizardStages.FormatNames)
+{
+  <FormatParticipantNamesStep OnNext="@Next" OnBack="@Back" />
+}
+else if (stage == WizardStages.ReviewAndGenerate)
+{
+  <ReviewAndGenerateStep OnBack="@Back" />
+}
 
-    <WizardSteps stage="@stage" OnTabClicked="TabClicked" />
-
-    @if (stage == WizardStages.UploadTemplate)
-    {
-      <UploadPowerPointTemplateStep OnNext="Next" />
-    }
-    else if (stage == WizardStages.EnterNames)
-    {
-      <EnterParticipantNamesStep OnNext="@Next" OnBack="@Back" />
-    }
-    else if (stage == WizardStages.FormatNames)
-    {
-      <FormatParticipantNamesStep OnNext="@Next" OnBack="@Back" />
-    }
-    else if (stage == WizardStages.ReviewAndGenerate)
-    {
-      <ReviewAndGenerateStep OnBack="@Back" />
-    }
-
-  </article>
-
-  <div class="fixed bottom-5 right-5 flex flex-col gap-2">
-    <SupportToast />
-    <TrackingToast />
-    <NewUpdateToast />
-  </div>
+<div class="fixed bottom-5 right-5 flex flex-col gap-2">
+  <SupportToast />
+  <TrackingToast />
+  <NewUpdateToast />
 </div>
 
 
@@ -92,10 +84,10 @@
     if (isMidProcess)
     {
       AppInsights.TrackEvent("LeavingMidProcess", new Dictionary<string, object?> {
-        { "TemplateFile", State.PowerPointFile is not null },
-        { "People", State.People.Any() },
-        { "Page", stage.ToString() },
-      });
+{ "TemplateFile", State.PowerPointFile is not null },
+{ "People", State.People.Any() },
+{ "Page", stage.ToString() },
+});
     }
 
     args.CancelRequested = isMidProcess;

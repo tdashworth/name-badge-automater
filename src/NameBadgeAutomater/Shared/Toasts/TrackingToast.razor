@@ -1,6 +1,4 @@
-@inject Blazored.LocalStorage.ISyncLocalStorageService LocalStorage
-@inject NavigationManager NavigationManager
-@inject IApplicationInsights AppInsights
+@inject SupportService SupportService
 
 @if (IsVisible)
 {
@@ -63,21 +61,8 @@
 }
 
 @code {
-  const string DisableTelemetryStorageKey = "disableTelemetry";
   bool IsVisible = true;
-  bool IsEnabled => !LocalStorage.GetItem<bool>(DisableTelemetryStorageKey);
-
-  private void Disable()
-  {
-    LocalStorage.SetItem(DisableTelemetryStorageKey, true);
-    AppInsights.TrackEvent("TelemetryDisabled");
-    NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
-  }
-
-  private void Enable()
-  {
-    LocalStorage.SetItem(DisableTelemetryStorageKey, false);
-    AppInsights.TrackEvent("TelemetryEnabled");
-    NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
-  }
+  bool IsEnabled => SupportService.IsTelemetryEnabled;
+  private void Disable() => SupportService.DisableTelemetry();
+  private void Enable() => SupportService.EnableTelemetry();
 }

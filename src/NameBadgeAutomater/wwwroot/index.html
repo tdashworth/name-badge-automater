@@ -82,7 +82,7 @@
                 return;
             }
 
-            navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'})
+            navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' })
                 .then(registration => {
                     console.info(`Service worker registration successful (scope: ${registration.scope})`);
 
@@ -120,6 +120,13 @@
             anchorElement.click();
             anchorElement.remove();
             URL.revokeObjectURL(url);
+        }
+    </script>
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
         }
     </script>
     <script src="_content/BlazorBeforeUnload/BeforeUnload.js"></script>

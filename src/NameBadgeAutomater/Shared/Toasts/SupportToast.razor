@@ -1,3 +1,5 @@
+@inject SupportService SupportService;
+
 @if (IsVisible)
 {
   <div class="p-4 w-full max-w-xs text-gray-600 bg-gray-100 rounded-lg shadow dark:bg-gray-800 dark:text-gray-400"
@@ -18,7 +20,7 @@
           questions or experience a problem, please reach out.</div>
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <a href="mailto:github.support@tdashworth.uk?subject=Name Badge Automater"
+            <a href="@MailToHref"
             class="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800">Contact</a>
           </div>
         </div>
@@ -40,4 +42,13 @@
 
 @code {
   bool IsVisible = true;
+  string MailToHref = string.Empty;
+
+  protected async override Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (!firstRender) return;
+
+    MailToHref = await SupportService.GetMailToHref();
+    StateHasChanged();
+  }
 }

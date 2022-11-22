@@ -9,8 +9,9 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddSingleton<AppState>();
-builder.Services.AddSingleton<PowerPointTemplateService>();
-builder.Services.AddSingleton<NameParserService>();
+builder.Services.AddScoped<PowerPointTemplateService>();
+builder.Services.AddScoped<NameParserService>();
+builder.Services.AddScoped<SupportService>();
 
 builder.Services.AddBeforeUnload();
 builder.Services.AddBlazorApplicationInsights();
