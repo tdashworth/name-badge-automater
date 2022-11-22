@@ -26,9 +26,7 @@ jobs:
     - name: Execute GitVersion
       uses: gittools/actions/gitversion/execute@v0.9.7
       with:
-        updateAssemblyInfo: true
-        updateAssemblyInfoFilename: 
-        additionalArguments: '/showConfig'
+        additionalArguments: '/updateprojectfiles /showconfig'
 
     - name: Test application
       run: dotnet test tests/NameBadgeAutomater.Tests/NameBadgeAutomater.Tests.csproj -c Release
