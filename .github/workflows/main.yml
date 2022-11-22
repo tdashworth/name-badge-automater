@@ -27,6 +27,7 @@ jobs:
       uses: gittools/actions/gitversion/execute@v0.9.7
       with:
         updateAssemblyInfo: true
+        updateAssemblyInfoFilename: 
         additionalArguments: '/showConfig'
 
     - name: Test application

@@ -21,7 +21,8 @@ public class SupportService
   }
 
   public async Task<string> GetAboutDetails(string newLineSeporator) => $"""
-    App version: {Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion}
+    Version: {Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version}
+    Full Version: {Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion}
     User ID: {await appInsights.GetUserId()}
     Session ID: {await appInsights.GetSessionId()}
     """.ReplaceLineEndings(newLineSeporator);
