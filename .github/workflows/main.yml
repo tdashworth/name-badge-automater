@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -26,7 +26,9 @@ jobs:
     - name: Execute GitVersion
       uses: gittools/actions/gitversion/execute@v3.0.0
       with:
-        additionalArguments: '/updateprojectfiles /showconfig'
+        overrideConfig:
+          updateprojectfiles
+          showconfig
 
     - name: Test application
       run: dotnet test tests/NameBadgeAutomater.Tests/NameBadgeAutomater.Tests.csproj -c Release
