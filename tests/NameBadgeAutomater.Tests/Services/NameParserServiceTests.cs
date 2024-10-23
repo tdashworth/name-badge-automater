@@ -34,7 +34,7 @@ public class NameParserServiceTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public void ParseRawName_ShouldReturnNull_WhenEmptyValue(string rawName)
+    public void ParseRawName_ShouldReturnNull_WhenEmptyValue(string? rawName)
     {
         //Arrange
         var sut = new NameParserService();

@@ -24,7 +24,7 @@ public class NameParserService
       .ToList();
   }
 
-  public Person? ParseRawName(string rawName)
+  public Person? ParseRawName(string? rawName)
   {
     if (string.IsNullOrWhiteSpace(rawName)) return null; // No name.
 
