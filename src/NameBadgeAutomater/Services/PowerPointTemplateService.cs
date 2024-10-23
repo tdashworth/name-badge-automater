@@ -97,7 +97,7 @@ public class PowerPointTemplateService
 
     // Save document
     using var outStream = new MemoryStream();
-    presentationDocument.Clone(outStream).Close();
+    presentationDocument.Clone(outStream).Dispose();
 
     return outStream.ToArray();
   }
