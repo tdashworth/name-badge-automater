@@ -65,4 +65,14 @@
   bool IsEnabled => SupportService.IsTelemetryEnabled;
   private void Disable() => SupportService.DisableTelemetry();
   private void Enable() => SupportService.EnableTelemetry();
+
+  protected async override Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (!firstRender) return;
+
+    await Task.Delay(TimeSpan.FromSeconds(30));
+    IsVisible = false;
+
+    StateHasChanged();
+  }
 }

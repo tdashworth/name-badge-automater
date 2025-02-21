@@ -50,5 +50,10 @@
 
     MailToHref = await SupportService.GetMailToHref();
     StateHasChanged();
+
+    await Task.Delay(TimeSpan.FromSeconds(30));
+    IsVisible = false;
+
+    StateHasChanged();
   }
 }

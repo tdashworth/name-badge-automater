@@ -59,13 +59,16 @@
   }
 
   [JSInvokable(nameof(OnUpdateAvailable))]
-  public Task OnUpdateAvailable()
+  public async Task OnUpdateAvailable()
   {
     IsVisible = true;
 
     StateHasChanged();
 
-    return Task.CompletedTask;
+    await Task.Delay(TimeSpan.FromSeconds(30));
+    IsVisible = false;
+
+    StateHasChanged();
   }
 
   private void Refresh()
