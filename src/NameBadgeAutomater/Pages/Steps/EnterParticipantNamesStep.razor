@@ -4,22 +4,44 @@
 <h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Paticipant Names</h2>
 
 <p class="mb-4 text-gray-600 dark:text-gray-400">
-  Enter a list of names to generator badges with. Each person should be on a new line and can be either of the following formats:
+  Enter a list of names to generator badges with. Each person should be on a new line and can be either of the following
+  formats:
 </p>
 <ul class="mb-4 ml-5 text-gray-600 dark:text-gray-400 list-disc">
   <li>FirstName LastName(s)</li>
   <li>LastName(s), FirstName</li>
   <li>FirstName.LastName@email.com</li>
-  <li>FirstName LastName(s)  &lt;some.email@email.com&gt;</li>
+  <li>FirstName LastName(s) &lt;some.email@email.com&gt;</li>
   <li>LastName(s), FirstName &lt;some.email@email.com&gt;</li>
 </ul>
 <p class="mb-4 text-gray-600 dark:text-gray-400">
-  <span class="italic">Tip:</span> Use can paste a list of email recipients separated by <code>;</code> without placing them on individual lines.
+  <span class="italic">Tip:</span> Use can paste a list of email recipients separated by <code>;</code> without placing
+  them on individual lines.
 </p>
 
-<textarea
-  class="block p-2.5 mb-4 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-  id="rawNames" rows="20" @bind="State.RawNames" @bind:event="oninput"></textarea>
+<div class="flex flex-row gap-2">
+  <textarea
+    class="inline-block p-2.5 mb-4 grow text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+    id="rawNames" rows="20" @bind="State.RawNames" @bind:event="oninput" placeholder="Names"></textarea>
+
+  @if (State.CompanySupported)
+  {
+    <textarea
+      class="inline-block p-2.5 mb-4 grow text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      id="rawNames" rows="20" @bind="State.RawCompanies" @bind:event="oninput" placeholder="Companies"></textarea>
+  }
+</div>
+
+@if (State.CompanySupported && !State.NamesAndCompaniesCountMatch)
+{
+  <div
+    class="block p-4 mb-4 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+    <p class="font-normal text-gray-700 dark:text-gray-400">
+      The number of names and companies do not match. Please ensure that each name has a corresponding company or blank
+      line.
+    </p>
+  </div>
+}
 
 <button type="button"
   class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
@@ -34,13 +56,13 @@
 
   [Parameter]
   public EventCallback OnNext { get; set; }
-  
-  [Parameter]  
-  public EventCallback OnBack { get; set; } 
+
+  [Parameter]
+  public EventCallback OnBack { get; set; }
 
   Task ProcessRawNames()
   {
-    State.People = NameParserService.ParseRawNames(State.RawNames);
+    State.People = NameParserService.ParseRawNames(State.RawNames, State.RawCompanies);
 
     return OnNext.InvokeAsync();
   }

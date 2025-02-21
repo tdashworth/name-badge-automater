@@ -54,7 +54,21 @@ public class NameParserServiceTests
         var sut = new NameParserService();
 
         //Act 
-        var actualPeople = sut.ParseRawNames(rawNames);
+        var actualPeople = sut.ParseRawNames(rawNames, string.Empty);
+
+        //Assert
+        actualPeople.Should().BeEquivalentTo(expectedPeople);
+    }
+
+    [Theory]
+    [MemberData(nameof(ParseRawNamesTestDataWithCompanies))]
+    public void ParseRawNames_ShouldReturnCorrectListOfPeopleWithCompanies(string rawNames, string rawCompanies, List<Person> expectedPeople)
+    {
+        //Arrange
+        var sut = new NameParserService();
+
+        //Act 
+        var actualPeople = sut.ParseRawNames(rawNames, rawCompanies);
 
         //Assert
         actualPeople.Should().BeEquivalentTo(expectedPeople);
@@ -67,6 +81,13 @@ public class NameParserServiceTests
         new object[] { SimpleRawNames, ExpectedPeople },
         new object[] { RawNamesWithEmptyLine, ExpectedPeople },
         new object[] { EmailListRawNames, ExpectedPeople },
+    };
+
+    public static IEnumerable<object[]> ParseRawNamesTestDataWithCompanies() => new List<object[]> 
+    {
+        new object[] { SimpleRawNames, SimpleRawCompanies, ExpectedPeopleAllWithCompanies },
+        new object[] { RawNamesWithEmptyLine, RawCompaniesWithEmptyLine, ExpectedPeopleAllWithCompanies },
+        new object[] { SimpleRawNames, "Company1", ExpectedPeopleOneWithCompanies },
     };
 
     private static string SimpleRawNames = 
@@ -86,9 +107,32 @@ public class NameParserServiceTests
     """
     First1 Last1 <ignore@email.com>; First2 Last2 <ignore@email.com>;
     """;
+
+    private static string SimpleRawCompanies = 
+    """
+    Company1
+    Company2
+    """;
+    private static string RawCompaniesWithEmptyLine = 
+    """
+    Company1
+
+    Company2
+
+    """;
     
     private static List<Person> ExpectedPeople = new List<Person>{
         new Person { FirstName = "First1", LastName = "Last1" },
+        new Person { FirstName = "First2", LastName = "Last2" },
+    };
+
+    private static List<Person> ExpectedPeopleAllWithCompanies = new List<Person>{
+        new Person { FirstName = "First1", LastName = "Last1", Company= "Company1" },
+        new Person { FirstName = "First2", LastName = "Last2", Company= "Company2" },
+    };
+
+    private static List<Person> ExpectedPeopleOneWithCompanies = new List<Person>{
+        new Person { FirstName = "First1", LastName = "Last1", Company= "Company1" },
         new Person { FirstName = "First2", LastName = "Last2" },
     };
 

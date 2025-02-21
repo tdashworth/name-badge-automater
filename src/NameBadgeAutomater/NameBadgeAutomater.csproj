@@ -24,7 +24,7 @@
   </ItemGroup>
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css" />
+    <Exec Command="npx tailwindcss@3 -i ./Styles/app.css -o ./wwwroot/css/app.css" />
   </Target>
 
 </Project>

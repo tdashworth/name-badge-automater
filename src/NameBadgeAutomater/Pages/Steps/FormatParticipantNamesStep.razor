@@ -17,6 +17,12 @@
         <th scope="col" class="py-3 px-6 underline cursor-pointer" @onclick="SortByLastName">
           Last name
         </th>
+        @if (State.CompanySupported)
+        {
+          <th scope="col" class="py-3 px-6 underline cursor-pointer" @onclick="SortByCompany">
+            Company
+          </th>
+        }
         <th scope="col" class="py-3 px-6">
           Actions
         </th>
@@ -28,17 +34,25 @@
         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
           <th scope="row" class="py-2 px-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
             <input type="text"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            name="FirstName" @bind-value="@person.FirstName" required>
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              name="FirstName" @bind-value="@person.FirstName" required>
           </th>
           <td class="py-4 px-6">
             <input type="text"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            name="LastName" @bind-value="@person.LastName" required>
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              name="LastName" @bind-value="@person.LastName" required>
           </td>
+          @if (State.CompanySupported)
+          {
+            <td class="py-4 px-6">
+              <input type="text"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                name="Company" @bind-value="@person.Company">
+            </td>
+          }
           <td class="py-4 px-6">
             <span class="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
-            @onclick="() => RemovePerson(person)">Remove</span>
+              @onclick="() => RemovePerson(person)">Remove</span>
           </td>
         </tr>
       }
@@ -53,6 +67,14 @@
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             name="LastName" @bind-value="@NewPerson.LastName" required>
         </td>
+        @if (State.CompanySupported)
+        {
+          <td class="py-4 px-6">
+            <input type="text"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              name="Company" @bind-value="@NewPerson.Company">
+          </td>
+        }
         <td class="py-4 px-6">
           <span class="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
             @onclick="AddPerson">Add</span>
@@ -108,5 +130,10 @@
   void SortByLastName()
   {
     State.People.Sort((p1, p2) => string.Compare(p1.LastName, p2.LastName));
+  }
+
+  void SortByCompany()
+  {
+    State.People.Sort((p1, p2) => string.Compare(p1.Company, p2.Company));
   }
 }

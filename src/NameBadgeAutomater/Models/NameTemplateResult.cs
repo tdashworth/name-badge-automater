@@ -9,5 +9,6 @@ namespace NameBadgeAutomater
     public int Index {get; set; }
     public int FirstCount { get; set; }
     public int LastCount { get; set; }
+    public int CompanyCount { get; set; }
   }
 }

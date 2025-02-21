@@ -9,12 +9,12 @@
 
 <p class="mb-4 text-gray-600 dark:text-gray-400">
   Upload a PowerPoint file with a single slide of designed badge(s). To identify where the participant's name will go,
-  use the placeholders <code>first_n</code> and <code>last_n</code>, where <code>n</code> represents the name placeholder 
-  index, correlating the first and last name.
+  use the placeholders <code>first_n</code>, <code>last_n</code> and optionally <code>company_n</code>, where <code>n</code> represents the name placeholder 
+  index, correlating the first, last and company name.
 </p>
 
 <p class="mb-4 text-gray-600 dark:text-gray-400">
-  <span class="italic">Tip:</span> Using <code>FIRST_N</code> and <code>LAST_N</code> will transform the given names to UPPERCASE. 
+  <span class="italic">Tip:</span> Using <code>FIRST_N</code>, <code>LAST_N</code> and <code>COMPANY_N</code> will transform the given names to UPPERCASE. 
 </p>
 
 <p class="mb-4 text-gray-600 dark:text-gray-400">
@@ -29,6 +29,11 @@
   <li>
     <NavLink class="text-blue-600 dark:text-blue-500 hover:underline"
       href="downloads/Single Double-Sided Badge Template.pptx" target="_blank">Single Double-Sided Badge Template
+    </NavLink>
+  </li>
+  <li>
+    <NavLink class="text-blue-600 dark:text-blue-500 hover:underline"
+      href="downloads/Eight Single-Sided Badge Template (Companies).pptx" target="_blank">Eight Single-Sided Badge Template with Companies
     </NavLink>
   </li>
 </ul>
@@ -92,6 +97,9 @@
             <th scope="col" class="py-3 px-6">
               <code>last_n</code>
             </th>
+            <th scope="col" class="py-3 px-6">
+              <code>company_n</code>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -130,6 +138,20 @@
                   <span class="flex gap-2">
                     <TickIcon />
                     @discoveredPlaceholder.LastCount @(discoveredPlaceholder.LastCount == 1 ? "placeholder" : "placeholders") found
+                  </span>
+                }
+              </td>
+              <td class="py-4 px-6">
+                @if (discoveredPlaceholder.CompanyCount == 0)
+                {
+                  <span class="flex gap-2">
+                    None found
+                  </span>
+                }
+                else
+                {
+                  <span class="flex gap-2">
+                    @discoveredPlaceholder.CompanyCount @(discoveredPlaceholder.CompanyCount == 1 ? "placeholder" : "placeholders") found
                   </span>
                 }
               </td>
@@ -198,7 +220,6 @@ else
       State.PowerPointFile = memoryStream.ToArray();
 
       State.DiscoveredPlaceholders = TemplateService.DiscoverTemplates(State.PowerPointFile);
-      State.BadgesPerPage = State.DiscoveredPlaceholders.Count();
 
       if (State.DiscoveredPlaceholders.Count() == 0)
       {

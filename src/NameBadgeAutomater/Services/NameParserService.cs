@@ -11,7 +11,7 @@ public class NameParserService
   static string At = "@";
   static string Period = ".";
 
-  public List<Person> ParseRawNames(string rawNames)
+  public List<Person> ParseRawNames(string rawNames, string companies)
   {
     if (string.IsNullOrWhiteSpace(rawNames)) return new List<Person>();
 
@@ -19,6 +19,14 @@ public class NameParserService
       .Split(Environment.NewLine)
       .SelectMany(line => line.Split(";"))
       .Select(ParseRawName)
+      .ZipLongest(companies.Split(Environment.NewLine), (person, company) =>
+      {
+        if (person is not null)
+        {
+          person.Company = company?.Trim() ?? string.Empty;
+        }
+        return person;
+      })
       .Where(person => person is not null)
       .Cast<Person>()
       .ToList();

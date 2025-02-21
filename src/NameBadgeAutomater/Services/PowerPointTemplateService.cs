@@ -6,7 +6,7 @@ namespace NameBadgeAutomater;
 
 public class PowerPointTemplateService
 {
-  private static readonly Regex TEMPLATE_REGEX = new Regex("(first|last)_\\d+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+  private static readonly Regex TEMPLATE_REGEX = new Regex("(first|last|company)_\\d+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
   public IEnumerable<NameTemplateResult> DiscoverTemplates(byte[] fileBytes)
   {
@@ -56,6 +56,7 @@ public class PowerPointTemplateService
                               Index = int.Parse(x.Key),
                               FirstCount = x.FirstOrDefault(xx => xx.Key.StartsWith("first", true, CultureInfo.CurrentUICulture)).Value,
                               LastCount = x.FirstOrDefault(xx => xx.Key.StartsWith("last", true, CultureInfo.CurrentUICulture)).Value,
+                              CompanyCount = x.FirstOrDefault(xx => xx.Key.StartsWith("company", true, CultureInfo.CurrentUICulture)).Value
                             })
                             .ToList();
 
@@ -113,8 +114,10 @@ public class PowerPointTemplateService
       newSlidePart.Slide.InnerXml = newSlidePart.Slide.InnerXml
         .Replace("FIRST_" + (i + 1).ToString(), person.FirstName.ToUpperInvariant())
         .Replace("LAST_" + (i + 1).ToString(), person.LastName.ToUpperInvariant())
+        .Replace("COMPANY_" + (i + 1).ToString(), person.Company.ToUpperInvariant())
         .Replace("first_" + (i + 1).ToString(), person.FirstName, true, CultureInfo.CurrentUICulture)
-        .Replace("last_" + (i + 1).ToString(), person.LastName, true, CultureInfo.CurrentUICulture);
+        .Replace("last_" + (i + 1).ToString(), person.LastName, true, CultureInfo.CurrentUICulture)
+        .Replace("company_" + (i + 1).ToString(), person.Company, true, CultureInfo.CurrentUICulture);
     }
 
     if (blankUnusedBadges)
@@ -123,7 +126,8 @@ public class PowerPointTemplateService
       {
         newSlidePart.Slide.InnerXml = newSlidePart.Slide.InnerXml
           .Replace("first_" + (i + 1), string.Empty, true, CultureInfo.CurrentUICulture)
-          .Replace("last_" + (i + 1), string.Empty, true, CultureInfo.CurrentUICulture);
+          .Replace("last_" + (i + 1), string.Empty, true, CultureInfo.CurrentUICulture)
+          .Replace("company_" + (i + 1), string.Empty, true, CultureInfo.CurrentUICulture);
       }
     }
 
