@@ -11,15 +11,15 @@
   <table class="w-full text-sm text-left text-gray-600 dark:text-gray-400">
     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
       <tr>
-        <th scope="col" class="py-3 px-6 underline cursor-pointer" @onclick="SortByFirstName">
+        <th scope="col" class="py-3 px-6 underline cursor-pointer" @onclick="SortByFirstName" title="Sort by first name. A to Z">
           First name
         </th>
-        <th scope="col" class="py-3 px-6 underline cursor-pointer" @onclick="SortByLastName">
+        <th scope="col" class="py-3 px-6 underline cursor-pointer" @onclick="SortByLastName" title="Sort by last name. A to Z">
           Last name
         </th>
         @if (State.CompanySupported)
         {
-          <th scope="col" class="py-3 px-6 underline cursor-pointer" @onclick="SortByCompany">
+          <th scope="col" class="py-3 px-6 underline cursor-pointer" @onclick="SortByCompany" title="Sort by company. A to Z">
             Company
           </th>
         }
