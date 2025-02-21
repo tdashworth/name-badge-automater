@@ -16,7 +16,7 @@ jobs:
 
     - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '7.x.x'
+        dotnet-version: '9.x.x'
 
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v3.0.0
@@ -46,13 +46,13 @@ jobs:
         
     # add .nojekyll file to tell GitHub pages to not treat this as a Jekyll project. (Allow files and folders starting with an underscore)
     - name: Add .nojekyll file
-      run: touch src/NameBadgeAutomater/bin/Release/net7.0/publish/wwwroot/.nojekyll
+      run: touch src/NameBadgeAutomater/bin/Release/net9.0/publish/wwwroot/.nojekyll
 
     - name: Commit to GitHub pages Repo
       if: success()
       uses: crazy-max/ghaction-github-pages@v4
       with:
         target_branch: gh-pages
-        build_dir: src/NameBadgeAutomater/bin/Release/net7.0/publish/wwwroot
+        build_dir: src/NameBadgeAutomater/bin/Release/net9.0/publish/wwwroot
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

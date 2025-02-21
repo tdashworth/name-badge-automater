@@ -11,10 +11,12 @@ public class PowerPointTemplateService
   public IEnumerable<NameTemplateResult> DiscoverTemplates(byte[] fileBytes)
   {
     PresentationDocument presentationDocument = null!;
-
+    
     try
     {
-      presentationDocument = PresentationDocument.Open(new MemoryStream(fileBytes), true);
+      var memoryStream = new MemoryStream();
+      memoryStream.Write(fileBytes);
+      presentationDocument = PresentationDocument.Open(memoryStream, true);
     }
     catch (Exception ex)
     {
@@ -60,7 +62,7 @@ public class PowerPointTemplateService
                             })
                             .ToList();
 
-    if (!indexedTemplates.Any()) return Enumerable.Empty<NameTemplateResult>();  
+    if (!indexedTemplates.Any()) return Enumerable.Empty<NameTemplateResult>();
 
     // Add missing indexes.
     for (int index = 1; index <= indexedTemplates.Max(x => x.Index); index++)
