@@ -1,13 +1,31 @@
 ﻿@inherits LayoutComponentBase
+@inject SupportService SupportService;
 
 <div class="relative min-h-screen p-8 max-w-3xl mx-auto">
   <header class="flex justify-between items-baseline text-gray-900 dark:text-white">
     <a class="mb-4 text-4xl tracking-tight font-bold hover:underline" href="">Name Badge Automater</a>
-    <a href="options">
-      <CogIcon />
-    </a>
+    <div class="flex flex-row gap-2">
+      <a href="@MailToHref">
+        <EnvolopeIcon />
+      </a>
+      <a href="options">
+        <CogIcon />
+      </a>
+    </div>
   </header>
   <article>
     @Body
   </article>
 </div>
+
+@code {
+  string MailToHref = string.Empty;
+
+  protected async override Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (!firstRender) return;
+
+    MailToHref = await SupportService.GetMailToHref();
+    StateHasChanged();
+  }
+}
