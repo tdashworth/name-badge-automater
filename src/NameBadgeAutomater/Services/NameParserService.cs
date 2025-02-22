@@ -43,10 +43,10 @@ public class NameParserService
       rawName = EmailListRegex.Replace(rawName, string.Empty);
     }
 
-    if (rawName.Contains(At)) // FirstName.LastName@email.com
+    if (rawName.Contains(At) && rawName.IndexOf(Period) < rawName.IndexOf(At)) // FirstName.LastName@email.com
     {
       var nameParts = rawName.Split(At).First().Split(Period);
-      return new Person { FirstName = nameParts[0].Trim().ToSentenceCase(), LastName = nameParts[1].Trim().ToSentenceCase() };
+      return new Person { FirstName = nameParts[0].Trim().ToSentenceCase(), LastName = string.Join(" ", nameParts.Skip(1).Select(StringExtensions.ToSentenceCase)) };
     }
 
     if (rawName.Contains(Comma)) // LastName(s), FirstName

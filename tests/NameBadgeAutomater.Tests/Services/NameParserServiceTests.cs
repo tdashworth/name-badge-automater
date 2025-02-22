@@ -8,6 +8,8 @@ public class NameParserServiceTests
     [InlineData("First	Last", "First", "Last")] // Tab
     [InlineData("Last, First", "First", "Last")] // Comma, reversed
     [InlineData("first.last@email.com", "First", "Last")] // Email
+    [InlineData("first.m.last@email.com", "First", "M Last")] // Email, middle initial
+    [InlineData("first@email.com", "first@email.com", "")] // Email, no period
     [InlineData("First Last <first.last@email.com>", "First", "Last")] // Email List, space
     [InlineData("Last, First <first.last@email.com>", "First", "Last")] // Email List, comma
     [InlineData("First Middle Last", "First", "Middle Last")] // Space
@@ -81,6 +83,7 @@ public class NameParserServiceTests
         new object[] { SimpleRawNames, ExpectedPeople },
         new object[] { RawNamesWithEmptyLine, ExpectedPeople },
         new object[] { EmailListRawNames, ExpectedPeople },
+        new object[] { FormatedEmailListRawNames, ExpectedPeople },
     };
 
     public static IEnumerable<object[]> ParseRawNamesTestDataWithCompanies() => new List<object[]> 
@@ -103,9 +106,14 @@ public class NameParserServiceTests
 
     """;
 
-    private static string EmailListRawNames = 
+    private static string FormatedEmailListRawNames = 
     """
     First1 Last1 <ignore@email.com>; First2 Last2 <ignore@email.com>;
+    """;
+
+    private static string EmailListRawNames = 
+    """
+    first1.last1@email.com; first2.last2@email.com;
     """;
 
     private static string SimpleRawCompanies = 
