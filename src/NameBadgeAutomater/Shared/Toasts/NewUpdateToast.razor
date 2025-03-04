@@ -1,6 +1,6 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
-@inject IApplicationInsights AppInsights
+@inject PlausibleService PlausibleService
 
 @if (IsVisible)
 {
@@ -73,7 +73,7 @@
 
   private void Refresh()
   {
-    AppInsights.TrackEvent("ManualUpdate");
+    PlausibleService.TrackEvent("ManualUpdate");
     NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
   }
 

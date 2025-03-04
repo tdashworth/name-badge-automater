@@ -2,7 +2,7 @@
 @using Microsoft.Extensions.Logging
 @inject AppState State
 @inject PowerPointTemplateService TemplateService
-@inject IApplicationInsights AppInsights
+@inject PlausibleService PlausibleService
 @inject ILogger<UploadPowerPointTemplateStep> logger
 
 <h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Badge Template</h2>
@@ -226,25 +226,20 @@ else
         throw new Exception("It looks like no placeholders were found. Please ensure there is atleast <code>first_1</code> and <code>last_1</code> and that the whole placeholder has matching font styling.");
       }
 
-      await AppInsights.TrackEvent("ValidateTemplate", new Dictionary<string, object?>{
-        { "FileSize", e.File.Size },
-        { "BadgesPerPage", State.BadgesPerPage },
-        { "DiscoveredPlaceholders", State.DiscoveredPlaceholders },
-        { "Duration", sw.ElapsedMilliseconds },
+      PlausibleService.TrackEvent("ValidateTemplate", new {
+        FileSize = e.File.Size,
+        BadgesPerPage = State.BadgesPerPage,
+        DiscoveredPlaceholders = State.DiscoveredPlaceholders,
+        Duration = sw.ElapsedMilliseconds,
       });
     }
     catch (Exception ex)
     {
       ErrorText = ex.Message;
 
-      await AppInsights.TrackException(new Error
-      {
-        Name = ex.GetType()!.AssemblyQualifiedName!,
-        Message = ex.Message,
-        Stack = ex.StackTrace,
-      }, properties: new Dictionary<string, object?>{
-        { "FileSize", e.File.Size },
-        { "Duration", sw.ElapsedMilliseconds },
+      PlausibleService.TrackException(ex, new {
+        FileSize = e.File.Size,
+        Duration = sw.ElapsedMilliseconds,
       });
     }
 

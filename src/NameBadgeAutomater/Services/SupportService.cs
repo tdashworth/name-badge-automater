@@ -7,15 +7,13 @@ namespace NameBadgeAutomater;
 
 public class SupportService
 {
-  private readonly IApplicationInsights appInsights;
   private readonly ISyncLocalStorageService localStorage;
   private readonly NavigationManager navigationManager;
   
   private const string DisableTelemetryStorageKey = "disableTelemetry";
 
-  public SupportService(IApplicationInsights appInsights, ISyncLocalStorageService localStorage, NavigationManager navigationManager)
+  public SupportService(ISyncLocalStorageService localStorage, NavigationManager navigationManager)
   {
-    this.appInsights = appInsights;
     this.localStorage = localStorage;
     this.navigationManager = navigationManager;
   }
@@ -23,8 +21,6 @@ public class SupportService
   public async Task<string> GetAboutDetails(string newLineSeporator) => $"""
     Version: {Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version}
     Full Version: {Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion}
-    User ID: {await appInsights.GetUserId()}
-    Session ID: {await appInsights.GetSessionId()}
     """.ReplaceLineEndings(newLineSeporator);
 
   public async Task<string> GetMailToHref() => $"mailto:github.support@tdashworth.uk?subject=Name Badge Automater&body={ await GetEmailBody()}";
@@ -42,7 +38,6 @@ public class SupportService
   public void DisableTelemetry()
   {
     localStorage.SetItem(DisableTelemetryStorageKey, true);
-    appInsights.TrackEvent("TelemetryDisabled");
     navigationManager.NavigateTo(navigationManager.Uri, forceLoad: true);
   }
 

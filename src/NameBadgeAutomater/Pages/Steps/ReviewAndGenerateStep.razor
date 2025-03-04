@@ -2,7 +2,7 @@
 @inject AppState State
 @inject PowerPointTemplateService TemplateService
 @inject IJSRuntime JS
-@inject IApplicationInsights AppInsights
+@inject PlausibleService PlausibleService
 
 <h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Review and Create</h2>
 
@@ -99,26 +99,22 @@ else
 
       State.HasGeneratedBadges = true;
 
-      await AppInsights.TrackEvent("GenerateBadges", new Dictionary<string, object?>{ 
-        { "PeopleCount", State.People.Count }, 
-        { "BadgesPerPage", State.BadgesPerPage },
-        { "PageCount", pageCount },
-        { "BlankUnusedBadges", BlankUnusedBadges },
-        { "Duration", sw.ElapsedMilliseconds },
+      PlausibleService.TrackEvent("GenerateBadges", new { 
+        PeopleCount = State.People.Count,
+        BadgesPerPage = State.BadgesPerPage,
+        PageCount = pageCount,
+        BlankUnusedBadges = BlankUnusedBadges,
+        Duration = sw.ElapsedMilliseconds,
       });
     } 
     catch (Exception ex)
     {
-      await AppInsights.TrackException(new Error { 
-        Name = ex.GetType()!.AssemblyQualifiedName!,
-        Message = ex.Message, 
-        Stack = ex.StackTrace,
-      }, properties: new Dictionary<string, object?>{ 
-        { "PeopleCount", State.People.Count }, 
-        { "BadgesPerPage", State.BadgesPerPage },
-        { "PageCount", pageCount },
-        { "BlankUnusedBadges", BlankUnusedBadges },
-        { "Duration", sw.ElapsedMilliseconds },
+      PlausibleService.TrackException(ex, new { 
+        PeopleCount = State.People.Count,  
+        BadgesPerPage = State.BadgesPerPage,
+        PageCount = pageCount,
+        BlankUnusedBadges = BlankUnusedBadges,
+        Duration = sw.ElapsedMilliseconds,
       });
       throw;
     }

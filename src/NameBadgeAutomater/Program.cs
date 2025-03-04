@@ -17,6 +17,7 @@ builder.Services.AddSingleton<AppState>();
 builder.Services.AddScoped<PowerPointTemplateService>();
 builder.Services.AddScoped<NameParserService>();
 builder.Services.AddScoped<SupportService>();
+builder.Services.AddScoped<PlausibleService>();
 
 builder.Services.AddBeforeUnload();
 builder.Services.AddBlazorApplicationInsights();
