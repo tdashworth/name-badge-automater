@@ -8,5 +8,13 @@ namespace NameBadgeAutomater
 
       return s.Substring(0, 1).ToUpperInvariant() + s.Substring(1);
     }
+
+    public static string EscapeForXML(this String s) {
+      return s.Replace("&", "&amp;")
+              .Replace("<", "&lt;")
+              .Replace(">", "&gt;")
+              .Replace("\"", "&quot;")
+              .Replace("'", "&apos;");
+    }
   }
 }

@@ -114,12 +114,12 @@ public class PowerPointTemplateService
       var person = peopleGroup[i];
 
       newSlidePart.Slide.InnerXml = newSlidePart.Slide.InnerXml
-        .Replace("FIRST_" + (i + 1).ToString(), person.FirstName.ToUpperInvariant())
-        .Replace("LAST_" + (i + 1).ToString(), person.LastName.ToUpperInvariant())
-        .Replace("COMPANY_" + (i + 1).ToString(), person.Company.ToUpperInvariant())
-        .Replace("first_" + (i + 1).ToString(), person.FirstName, true, CultureInfo.CurrentUICulture)
-        .Replace("last_" + (i + 1).ToString(), person.LastName, true, CultureInfo.CurrentUICulture)
-        .Replace("company_" + (i + 1).ToString(), person.Company, true, CultureInfo.CurrentUICulture);
+        .Replace("FIRST_" + (i + 1).ToString(), person.FirstName.EscapeForXML().ToUpperInvariant())
+        .Replace("LAST_" + (i + 1).ToString(), person.LastName.EscapeForXML().ToUpperInvariant())
+        .Replace("COMPANY_" + (i + 1).ToString(), person.Company.EscapeForXML().ToUpperInvariant())
+        .Replace("first_" + (i + 1).ToString(), person.FirstName.EscapeForXML(), true, CultureInfo.CurrentUICulture)
+        .Replace("last_" + (i + 1).ToString(), person.LastName.EscapeForXML(), true, CultureInfo.CurrentUICulture)
+        .Replace("company_" + (i + 1).ToString(), person.Company.EscapeForXML(), true, CultureInfo.CurrentUICulture);
     }
 
     if (blankUnusedBadges)

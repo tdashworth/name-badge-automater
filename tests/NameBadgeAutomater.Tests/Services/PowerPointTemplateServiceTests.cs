@@ -85,6 +85,7 @@ public class PowerPointTemplateServiceTests
         new object[] { "OneTemplateTwice.pptx", 1, People.Take(1), true, "Result_OneByOne.pptx" },
         new object[] { "OneTemplateTwice.pptx", 1, People.Take(2), true, "Result_OneByTwo.pptx" },
         new object[] { "DifferentCasedNames.pptx", 6, People.Take(6), true, "Result_DifferentCasedNames.pptx" },
+        new object[] { "EightTemplatesOnceWithCompanies.pptx", 8, PeopleWithSpecialCharaters, true, "Result_SpecialCharacters.pptx" },
     };
 
     [Theory]
@@ -178,6 +179,14 @@ public class PowerPointTemplateServiceTests
         new Person { FirstName = "First8", LastName = "Last8", Company = "Company8" },
         new Person { FirstName = "First9", LastName = "Last9", Company = "Company9" },
         new Person { FirstName = "First10", LastName = "Last10", Company = "Company10" },
+    };
+
+    private static List<Person> PeopleWithSpecialCharaters = new List<Person> {
+        new Person { FirstName = "First>", LastName = "Last>", Company = "Company>" },
+        new Person { FirstName = "First<", LastName = "Last<", Company = "Company<" },
+        new Person { FirstName = "First\"", LastName = "Last\"", Company = "Company\"" },
+        new Person { FirstName = "First'", LastName = "Last'", Company = "Company'" },
+        new Person { FirstName = "First&", LastName = "Last&", Company = "Company&" },
     };
 
     #endregion
