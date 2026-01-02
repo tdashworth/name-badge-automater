@@ -5,15 +5,6 @@
 
 <h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Options</h2>
 
-<label class="mb-4 inline-flex relative items-center cursor-pointer" onclick="@ToggleTelemetry">
-  <input type="checkbox" value="" class="sr-only peer" checked="@IsTelemetryEnabled">
-  <div
-    class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-  </div>
-  <span class="ml-3 text-sm font-medium text-gray-600 dark:text-gray-400">Anonymous analytics</span>
-</label>
-<br />
-
 <h2 class="mb-4 text-2xl tracking-tight font-bold text-gray-900 dark:text-white">Help and support</h2>
 
 <p class="mb-4 text-gray-600 dark:text-gray-400">
@@ -35,7 +26,6 @@
 @code {
   string MailToHref = string.Empty;
   string AboutDetails = string.Empty;
-  bool IsTelemetryEnabled => SupportService.IsTelemetryEnabled;
 
   protected async override Task OnAfterRenderAsync(bool firstRender)
   {
@@ -45,6 +35,4 @@
     AboutDetails = await SupportService.GetAboutDetails("<br />");
     StateHasChanged();
   }
-
-  Action ToggleTelemetry => IsTelemetryEnabled ? SupportService.DisableTelemetry : SupportService.EnableTelemetry;
 }

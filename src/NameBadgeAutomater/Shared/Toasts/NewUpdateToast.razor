@@ -71,9 +71,9 @@
     StateHasChanged();
   }
 
-  private void Refresh()
+  private async Task Refresh()
   {
-    AppInsights.TrackEvent("ManualUpdate");
+    await AppInsights.TrackEvent("ManualUpdate");
     NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
   }
 

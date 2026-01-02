@@ -107,7 +107,7 @@
 }
 
 /*
-! tailwindcss v3.4.18 | MIT License | https://tailwindcss.com
+! tailwindcss v3.4.19 | MIT License | https://tailwindcss.com
 */
 
 /*
@@ -1189,11 +1189,6 @@ video {
 .after\:left-\[2px\]::after {
   content: var(--tw-content);
   left: 2px;
-}
-
-.after\:top-0\.5::after {
-  content: var(--tw-content);
-  top: 0.125rem;
 }
 
 .after\:top-\[2px\]::after {

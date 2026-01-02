@@ -16,33 +16,8 @@
       </div>
       <div class="ml-3 text-sm font-normal">
         <span class="mb-1 text-sm font-semibold text-gray-900 dark:text-white">Analytics</span>
-        @if (IsEnabled)
-        {
-          <div class="mb-2 text-sm font-normal">
-            This app captures anonymous analytics so that it can be made better for you.
-          </div>
-        }
-        else
-        {
-          <div class="mb-2 text-sm font-normal">
-            Help us help you and turn anonymous analytics back on.
-          </div>
-        }
-        <div class="grid grid-cols-2 gap-2">
-          @if (IsEnabled)
-          {
-            <span @onclick="() => Disable()"
-          class="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800">
-              Disable
-            </span>
-          }
-          else
-          {
-            <span @onclick="() => Enable()"
-          class="inline-flex justify-center w-full px-2 py-1.5 text-xs font-medium text-center text-white bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800">
-              Enable
-            </span>
-          }
+        <div class="mb-2 text-sm font-normal">
+          This app captures anonymous analytics so that it can be made better for you.
         </div>
       </div>
       <button type="button"
@@ -62,9 +37,6 @@
 
 @code {
   bool IsVisible = true;
-  bool IsEnabled => SupportService.IsTelemetryEnabled;
-  private void Disable() => SupportService.DisableTelemetry();
-  private void Enable() => SupportService.EnableTelemetry();
 
   protected async override Task OnAfterRenderAsync(bool firstRender)
   {

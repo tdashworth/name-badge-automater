@@ -1,4 +1,5 @@
 @using System.Diagnostics
+@using BlazorApplicationInsights.Models
 @using Microsoft.Extensions.Logging
 @inject AppState State
 @inject PowerPointTemplateService TemplateService
@@ -163,12 +164,12 @@
   }
 }
 
-@if (!string.IsNullOrEmpty(ErrorText))
+@if (LastError is not null)
 {
   <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
     <CrossIcon Class="inline-block"/>
     <span class="font-medium">Validation error</span>
-    @((MarkupString)ErrorText)
+    @((MarkupString)LastError!.Message)
   </div>
 }
 
@@ -199,21 +200,24 @@ else
 @code {
   bool IsValidatingFile = false;
   bool CanContinue => State.PowerPointFile is not null && State.DiscoveredPlaceholders is not null && TemplateService.IsTemplateValid(State.DiscoveredPlaceholders);
-  string ErrorText = string.Empty;
+  Exception? LastError = null;
 
   [Parameter]
   public EventCallback OnNext { get; set; }
 
   async Task OnFileSelected(InputFileChangeEventArgs e)
   {
-    Reset();
-
     var sw = Stopwatch.StartNew();
 
     State.FileName = e.File.Name;
 
     try
     {
+      State.DiscoveredPlaceholders = null;
+      IsValidatingFile = true;
+      LastError = null;
+      StateHasChanged();
+
       using var stream = e.File.OpenReadStream(20 * 1024 * 1024);
       using var memoryStream = new MemoryStream();
       await stream.CopyToAsync(memoryStream);
@@ -235,29 +239,25 @@ else
     }
     catch (Exception ex)
     {
-      ErrorText = ex.Message;
-
-      await AppInsights.TrackException(new Error
-      {
-        Name = ex.GetType()!.AssemblyQualifiedName!,
-        Message = ex.Message,
-        Stack = ex.StackTrace,
-      }, properties: new Dictionary<string, object?>{
-        { "FileSize", e.File.Size },
-        { "Duration", sw.ElapsedMilliseconds },
+      await AppInsights.TrackException(new ExceptionTelemetry {
+        Exception = new Error
+        {
+          Name = ex.GetType()!.AssemblyQualifiedName!,
+          Message = ex.Message,
+          Stack = ex.StackTrace,
+        },
+        Properties = new Dictionary<string, object?>{
+          { "FileSize", e.File.Size },
+          { "Duration", sw.ElapsedMilliseconds },
+        }
       });
+      LastError = ex;
     }
-
-    IsValidatingFile = false;
+    finally {
+      IsValidatingFile = false;
+    }
   }
 
   Task Continue() => OnNext.InvokeAsync();
-
-  void Reset() {
-    IsValidatingFile = true;
-    State.DiscoveredPlaceholders = null;
-    ErrorText = string.Empty;
-    StateHasChanged();
-  }
 
 }

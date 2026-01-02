@@ -1,4 +1,5 @@
 @using System.Diagnostics
+@using BlazorApplicationInsights.Models
 @inject AppState State
 @inject PowerPointTemplateService TemplateService
 @inject IJSRuntime JS
@@ -8,13 +9,27 @@
 
 <ul class="space-y-4 mb-4">
   <li class="flex items-center text-gray-600 dark:text-gray-400">
-    @if(State.PowerPointFile is null || State.BadgesPerPage == 0) { <CrossIcon /> } else { <TickIcon /> }
+    @if (State.PowerPointFile is null || State.BadgesPerPage == 0)
+    {
+      <CrossIcon />
+    }
+    else
+    {
+      <TickIcon />
+    }
     <p class="ml-3">
       PowerPoint template uploaded
     </p>
   </li>
   <li class="flex items-center text-gray-600 dark:text-gray-400">
-    @if(!State.People.Any()) { <CrossIcon /> } else { <TickIcon /> }
+    @if (!State.People.Any())
+    {
+      <CrossIcon />
+    }
+    else
+    {
+      <TickIcon />
+    }
     <p class="ml-3">
       Participant names provided
     </p>
@@ -22,7 +37,8 @@
 </ul>
 
 <p class="mb-4 text-gray-600 dark:text-gray-400">
-  You have provided @State.People.Count() @(State.People.Count() == 1 ? "name" : "names") to generate badges for. That will be @pageCount @(pageCount == 1 ? "page" : "pages").
+  You have provided @State.People.Count() @(State.People.Count() == 1 ? "name" : "names") to generate badges for. That
+  will be @pageCount @(pageCount == 1 ? "page" : "pages").
 </p>
 
 <label for="default-toggle" class="inline-flex relative items-center cursor-pointer mb-4">
@@ -30,7 +46,7 @@
   <div
     class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
   </div>
-  <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">@(BlankUnusedBadges ? "Blank placeholders from unused badges" : "Leave placeholders from unused badges")</span>
+  <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">@(BlankUnusedBadges ? "Blank placeholders from    unused badges" : "Leave placeholders from unused badges")</span>
 </label>
 
 <div class="p-4 mb-4 text-sm text-blue-700 bg-blue-100 rounded-lg dark:bg-blue-200 dark:text-blue-800" role="alert">
@@ -43,27 +59,36 @@
   the broswer will freeze while the generation takes place. This should only take less than a minute.
 </div>
 
+@if (LastError is not null)
+{
+  <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
+    <CrossIcon Class="inline-block"/>
+    <span class="font-medium">Generation error</span>
+    @(LastError?.Message)
+  </div>
+}
+
 @if (!IsLoading)
 {
   <button type="button"
-  class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 disabled:bg-blue-400 disabled:dark:bg-blue-300 disabled:cursor-not-allowed"
-  @onclick="GeneratorAndDownload" disabled="@(!CanContinue)">Generate</button>
+    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 disabled:bg-blue-400 disabled:dark:bg-blue-300 disabled:cursor-not-allowed"
+    @onclick="GeneratorAndDownload" disabled="@(!CanContinue)">Generate</button>
 }
 else
 {
   <button disabled type="button"
-  class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center">
-  <svg role="status" class="inline mr-3 w-4 h-4 text-white animate-spin" viewBox="0 0 100 101" fill="none"
-    xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-      fill="#E5E7EB" />
-    <path
-      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-      fill="currentColor" />
-  </svg>
-  Loading...
-</button>
+    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center">
+    <svg role="status" class="inline mr-3 w-4 h-4 text-white animate-spin" viewBox="0 0 100 101" fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+        fill="#E5E7EB" />
+      <path
+        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+        fill="currentColor" />
+    </svg>
+    Loading...
+  </button>
 }
 
 <button type="button"
@@ -71,12 +96,14 @@ else
   @onclick="Back">Back</button>
 
 @code {
-  int pageCount => State.BadgesPerPage == 0 
-                    ?  0 
-                    : (int)Math.Round(State.People.Count() / (double)State.BadgesPerPage, MidpointRounding.ToPositiveInfinity);
+  int pageCount => State.BadgesPerPage == 0
+  ? 0
+  : (int)Math.Round(State.People.Count() / (double)State.BadgesPerPage, MidpointRounding.ToPositiveInfinity);
   bool BlankUnusedBadges { get; set; } = true;
   bool IsLoading = false;
   bool CanContinue => State.PowerPointFile is not null && State.People.Any();
+
+  Exception? LastError = null;
 
   [Parameter]
   public EventCallback OnBack { get; set; }
@@ -85,13 +112,16 @@ else
   {
     var sw = Stopwatch.StartNew();
 
-    try {
+    try
+    {
       IsLoading = true;
+      LastError = null;
       StateHasChanged();
 
       if (State.PowerPointFile is null || State.PowerPointFile.Length == 0) throw new Exception("No PowerPoint template provided.");
 
-      var newFileBytes = TemplateService.GenerateFromTemplate(State.PowerPointFile, State.People, State.BadgesPerPage, BlankUnusedBadges);
+      var newFileBytes = TemplateService.GenerateFromTemplate(State.PowerPointFile, State.People, State.BadgesPerPage,
+      BlankUnusedBadges);
 
       using var streamRef = new DotNetStreamReference(stream: new MemoryStream(newFileBytes));
 
@@ -99,30 +129,26 @@ else
 
       State.HasGeneratedBadges = true;
 
-      await AppInsights.TrackEvent("GenerateBadges", new Dictionary<string, object?>{ 
-        { "PeopleCount", State.People.Count }, 
+      await AppInsights.TrackEvent("GenerateBadges", new Dictionary<string, object?>{
+        { "PeopleCount", State.People.Count },
         { "BadgesPerPage", State.BadgesPerPage },
         { "PageCount", pageCount },
         { "BlankUnusedBadges", BlankUnusedBadges },
         { "Duration", sw.ElapsedMilliseconds },
       });
-    } 
+    }
     catch (Exception ex)
     {
-      await AppInsights.TrackException(new Error { 
-        Name = ex.GetType()!.AssemblyQualifiedName!,
-        Message = ex.Message, 
-        Stack = ex.StackTrace,
-      }, properties: new Dictionary<string, object?>{ 
-        { "PeopleCount", State.People.Count }, 
+      await AppInsights.TrackException(ex, new Dictionary<string, object?>{
+        { "PeopleCount", State.People.Count },
         { "BadgesPerPage", State.BadgesPerPage },
         { "PageCount", pageCount },
         { "BlankUnusedBadges", BlankUnusedBadges },
         { "Duration", sw.ElapsedMilliseconds },
       });
-      throw;
+      LastError = ex;
     }
-    finally 
+    finally
     {
       IsLoading = false;
     }

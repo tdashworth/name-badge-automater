@@ -1,5 +1,7 @@
 using System.Reflection;
 using BlazorApplicationInsights;
+using BlazorApplicationInsights.Interfaces;
+using BlazorApplicationInsights.Models;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 
@@ -8,23 +10,17 @@ namespace NameBadgeAutomater;
 public class SupportService
 {
   private readonly IApplicationInsights appInsights;
-  private readonly ISyncLocalStorageService localStorage;
-  private readonly NavigationManager navigationManager;
-  
-  private const string DisableTelemetryStorageKey = "disableTelemetry";
 
   public SupportService(IApplicationInsights appInsights, ISyncLocalStorageService localStorage, NavigationManager navigationManager)
   {
     this.appInsights = appInsights;
-    this.localStorage = localStorage;
-    this.navigationManager = navigationManager;
   }
 
   public async Task<string> GetAboutDetails(string newLineSeporator) => $"""
     Version: {Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version}
-    Full Version: {Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion}
-    User ID: {await appInsights.GetUserId()}
-    Session ID: {await appInsights.GetSessionId()}
+    Full Version: {Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "unknown"}
+    User ID: {(await appInsights.Context()).User.Id}
+    Session ID: {(await appInsights.Context()).SessionManager.AutomaticSession.Id}
     """.ReplaceLineEndings(newLineSeporator);
 
   public async Task<string> GetMailToHref() => $"mailto:github.support@tdashworth.uk?subject=Name Badge Automater&body={ await GetEmailBody()}";
@@ -36,19 +32,4 @@ public class SupportService
 
     { await GetAboutDetails("%0D%0A") }
     """.ReplaceLineEndings("%0D%0A");
-
-  public bool IsTelemetryEnabled => !localStorage.GetItem<bool>(DisableTelemetryStorageKey);
-
-  public void DisableTelemetry()
-  {
-    localStorage.SetItem(DisableTelemetryStorageKey, true);
-    appInsights.TrackEvent("TelemetryDisabled");
-    navigationManager.NavigateTo(navigationManager.Uri, forceLoad: true);
-  }
-
-  public void EnableTelemetry()
-  {
-    localStorage.SetItem(DisableTelemetryStorageKey, false);
-    navigationManager.NavigateTo(navigationManager.Uri, forceLoad: true);
-  }
 }

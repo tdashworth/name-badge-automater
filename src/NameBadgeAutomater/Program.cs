@@ -1,4 +1,6 @@
+using System.Reflection;
 using BlazorApplicationInsights;
+using BlazorApplicationInsights.Models;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -19,7 +21,29 @@ builder.Services.AddScoped<NameParserService>();
 builder.Services.AddScoped<SupportService>();
 
 builder.Services.AddBeforeUnload();
-builder.Services.AddBlazorApplicationInsights();
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddBlazorApplicationInsights(config =>
+    {
+        config.ConnectionString = "InstrumentationKey=00fb8745-5453-4e32-9e45-ff1395a50b79;IngestionEndpoint=https://westeurope-5.in.applicationinsights.azure.com/;LiveEndpoint=https://westeurope.livediagnostics.monitor.azure.com/;ApplicationId=24d28cde-9fb2-4da0-9167-268b7fdafb3b";
+        config.EnableCorsCorrelation = true;
+        config.EnableRequestHeaderTracking = true;
+        config.EnableResponseHeaderTracking = true;
+        // config.DisableTelemetry = builder.HostEnvironment.IsDevelopment();
+        // Console.WriteLine($"Telemetry Disabled: {config.DisableTelemetry}");
+    },
+    async applicationInsights =>
+    {
+        var telemetryItem = new TelemetryItem()
+        {
+            Data = new Dictionary<string, object?>()
+            {
+                { "appVersion", Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version ?? "unknown" }
+            }
+        };
+
+        await applicationInsights.AddTelemetryInitializer(telemetryItem);
+    });
 builder.Services.AddBlazoredLocalStorage();
 
 await builder.Build().RunAsync();
+
