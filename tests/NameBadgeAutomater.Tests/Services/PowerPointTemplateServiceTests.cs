@@ -86,6 +86,7 @@ public class PowerPointTemplateServiceTests
         new object[] { "OneTemplateTwice.pptx", 1, People.Take(2), true, "Result_OneByTwo.pptx" },
         new object[] { "DifferentCasedNames.pptx", 6, People.Take(6), true, "Result_DifferentCasedNames.pptx" },
         new object[] { "EightTemplatesOnceWithCompanies.pptx", 8, PeopleWithSpecialCharaters, true, "Result_SpecialCharacters.pptx" },
+        new object[] { "EightTemplatesOnceWithCompaniesCapitals.pptx", 8, PeopleWithSpecialCharaters, true, "Result_SpecialCharactersCapitals.pptx" },
     };
 
     [Theory]

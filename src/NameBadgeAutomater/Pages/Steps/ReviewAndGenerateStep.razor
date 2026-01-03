@@ -120,12 +120,14 @@ else
 
       if (State.PowerPointFile is null || State.PowerPointFile.Length == 0) throw new Exception("No PowerPoint template provided.");
 
-      var newFileBytes = TemplateService.GenerateFromTemplate(State.PowerPointFile, State.People, State.BadgesPerPage,
-      BlankUnusedBadges);
+      await Task.Run(async () => {
+        var newFileBytes = TemplateService.GenerateFromTemplate(State.PowerPointFile, State.People, State.BadgesPerPage,
+        BlankUnusedBadges);
 
-      using var streamRef = new DotNetStreamReference(stream: new MemoryStream(newFileBytes));
+        using var streamRef = new DotNetStreamReference(stream: new MemoryStream(newFileBytes));
 
-      await JS.InvokeVoidAsync("downloadFileFromStream", "Generated Name Badges.pptx", streamRef);
+        await JS.InvokeVoidAsync("downloadFileFromStream", "Generated Name Badges.pptx", streamRef);
+      });
 
       State.HasGeneratedBadges = true;
 
