@@ -26,9 +26,8 @@ jobs:
     - name: Execute GitVersion
       uses: gittools/actions/gitversion/execute@v4.0.0
       with:
-        overrideConfig:
-          updateprojectfiles
-          showconfig
+        updateProjectFiles: true
+        updateAssemblyInfo: true
 
     - name: Test application
       run: dotnet test tests/NameBadgeAutomater.Tests/NameBadgeAutomater.Tests.csproj -c Release
