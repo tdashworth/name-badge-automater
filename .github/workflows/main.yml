@@ -19,12 +19,12 @@ jobs:
         dotnet-version: '9.x.x'
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v3.0.0
+      uses: gittools/actions/gitversion/setup@v4.0.0
       with:
         versionSpec: '6.x'
 
     - name: Execute GitVersion
-      uses: gittools/actions/gitversion/execute@v3.0.0
+      uses: gittools/actions/gitversion/execute@v4.0.0
       with:
         overrideConfig:
           updateprojectfiles
