@@ -27,7 +27,9 @@ jobs:
       uses: gittools/actions/gitversion/execute@v4.0.0
       with:
         updateProjectFiles: true
-        updateAssemblyInfo: true
+
+    - name: Restore dependencies
+      run: cat src/NameBadgeAutomater/NameBadgeAutomater.csproj | grep -i version
 
     - name: Test application
       run: dotnet test tests/NameBadgeAutomater.Tests/NameBadgeAutomater.Tests.csproj -c Release
